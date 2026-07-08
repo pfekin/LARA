@@ -1,5 +1,5 @@
-# Rosetta Stone for Bilingual Latent Space Alignment (50% FR / 50% EN)
-#
+# Make Python Dataset for Latent Space Alignment (5% Chat, 95%Python)
+
 import json
 import datasets
 import argparse
@@ -9,7 +9,7 @@ import os  # Required for hard termination bypass
 import sys
 
 """
-Proportional Meta-Dataset Harvester with Process Finalization Safeguards.
+Proportional Meta-Dataset Harvester.
 Optimized to handle streaming network threads without core-dumping.
 """
 
@@ -203,7 +203,7 @@ def main():
             del ds
             
             if count == 0 and rows_examined > 0:
-                print(f"      ⚠️ Telemetry Diagnostic for [{config['name']}]:")
+                print(f"        Telemetry Diagnostic for [{config['name']}]:")
                 print(f"        - Total rows streamed and examined: {rows_examined}")
                 print(f"        - Available schema keys found: {keys_seen}")
                 print(f"        - Skipped due to parsing failure / empty fields: {skips_empty}")
@@ -216,7 +216,7 @@ def main():
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(harvested_matrix, f, indent=4, ensure_ascii=False)
 
-    print(f"\n💾 Balanced Mixture Complete. Generated '{args.output}' containing {len(harvested_matrix)} balanced rows.")
+    print(f"\nBalanced Mixture Complete. Generated '{args.output}' containing {len(harvested_matrix)} balanced rows.")
     
     # --- HARD FINALIZATION BYPASS ---
     # Manually flush terminal buffers and cut the process cleanly.
