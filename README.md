@@ -82,17 +82,6 @@ The scripts pull public datasets from the Hugging Face Hub: a code corpus, Datab
 
 At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, LARA reaches comparable fine-tuning perplexity and comparable DPO reward accuracy on Qwen2.5-1.5B-Instruct. The scale gamma, applied at inference, interpolates smoothly between the base and the adapted model. Seven behaviors sit on one frozen 3 GB base for about 33 MB of adapters and route per token. See the paper for the full tables.
 
-## Citation
-
-```
-@misc{lara2026,
-  title        = {LARA: Lightweight Adapters in the Residual Stream for
-                  Composable Adaptation and Alignment on Frozen Models},
-  author       = {Ekin, Pascal},
-  year         = {2026},
-  note         = {Preprint}
-}
-```
 
 ## License
 
