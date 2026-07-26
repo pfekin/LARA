@@ -12,7 +12,7 @@ This repository contains the code for the experiments in the accompanying paper 
 
 ![LoRA vs LARA](media/figure1_lora_vs_lara.svg)
 
-*LoRA adapts in weight space, LARA adapts in the residual stream. The base block stays frozen while a low-rank correction is read from the stream and added back.*
+*LoRA adapts in weight space. LARA adapts in the residual stream. The base block stays frozen while a low-rank correction is read from the stream and added back.*
 
 ## Why this matters for local AI
 
