@@ -421,7 +421,7 @@ def load_ft_data(tok):
             if ids:
                 splits.append((src["name"], ids)); print(f"   ✓ split '{src['name']}': {len(ids)} ex")
         except Exception as e:
-            print(f"   ⚠️ split '{src['name']}' unavailable ({type(e).__name__}); skipping")
+            print(f"    split '{src['name']}' unavailable ({type(e).__name__}); skipping")
     return train_texts, splits
 
 def _text_stream(tok, texts, max_len):
@@ -442,7 +442,7 @@ def train_ce(model, enc_train, steps, lr, grad_accum):
     opt = torch.optim.AdamW(params, lr=lr)
     model.train()
     idx = list(range(len(enc_train))); random.shuffle(idx); ptr = 0
-    print(f"  🔥 CE: {steps} steps · lr={lr} · accum={grad_accum} · {n_trainable(model):,} params")
+    print(f"   CE: {steps} steps · lr={lr} · accum={grad_accum} · {n_trainable(model):,} params")
     for step in range(steps):
         opt.zero_grad(); running = 0.0
         for _ in range(grad_accum):
@@ -469,7 +469,7 @@ def eval_ppl(model, eval_ids, use_bridges):
 def run_ft():
     set_seed(CFG["seed"])
     base, tok = load_model(CFG["model"], CFG["quantization"])
-    print("\n📥 Loading fine-tuning data (python_600 + OOD)...")
+    print("\n Loading fine-tuning data (python_600 + OOD)...")
     train_texts, splits = load_ft_data(tok)
     enc_train = _to_ids_all(tok, train_texts, CFG["ft"]["max_seq_len"])
     print(f"   train sequences: {len(enc_train)}")
@@ -509,7 +509,7 @@ def run_ft():
     print(header); print("   " + "-" * (len(header) - 3))
     print(f"   {'(base)':<10}| {'—':>10} | " + " | ".join(f"{base_ppl[n]:>13.2f}" for n in names))
     for arm, p, res in rows:
-        cells = " | ".join(f"{res[n]:>10.2f} {'✅' if res[n] < base_ppl[n] else '❌'}" for n in names)
+        cells = " | ".join(f"{res[n]:>10.2f} {'OK' if res[n] < base_ppl[n] else 'X'}" for n in names)
         print(f"   {arm:<10}| {p:>10,} | {cells}")
     print("═" * 78)
     print("   READ: in_dist/instruct gains = format adaptation; raw-text ≈ base = non-destructive.")
@@ -567,11 +567,11 @@ def reference_logprobs(model, enc, length_norm):
 
 def train_dpo(model, enc, ref_w, ref_l, beta, steps, lr, grad_accum, nll_lambda, length_norm):
     if length_norm and beta < 1.0:
-        print(f"  ⚠️ β={beta} low for length-normalized DPO (SimPO/CPO use β≈2)")
+        print(f"   β={beta} low for length-normalized DPO (SimPO/CPO use β≈2)")
     params = model.trainable_params()
     opt = torch.optim.AdamW(params, lr=lr); model.train()
     idx = list(range(len(enc))); random.shuffle(idx); ptr = 0
-    print(f"  🔥 DPO{'(len-norm)' if length_norm else '(sum)'}: {steps} steps · β={beta} · "
+    print(f"   DPO{'(len-norm)' if length_norm else '(sum)'}: {steps} steps · β={beta} · "
           f"λ_nll={nll_lambda} · lr={lr} · accum={grad_accum} · {len(enc)} pairs · {n_trainable(model):,} params")
     for step in range(steps):
         opt.zero_grad(); rd = rn = 0.0; acc = 0
@@ -646,7 +646,7 @@ def base_preference_gap(base, enc, n=32):
 def run_dpo():
     d = CFG["dpo"]; set_seed(CFG["seed"])
     base, tok = load_model(CFG["model"], CFG["quantization"])
-    print("\n📥 Loading ultrafeedback pairs...")
+    print("\n Loading ultrafeedback pairs...")
     enc_tr = encode_pairs(tok, load_pairs(d["train_split"], d["train_n"]))
     enc_ev = encode_pairs(tok, load_pairs(d["eval_split"], d["eval_n"]))
     print(f"   train pairs: {len(enc_tr)} | eval pairs: {len(enc_ev)}")
