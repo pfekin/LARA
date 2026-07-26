@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="470" viewBox="0 0 1000 470">
+  <rect x="0" y="0" width="1000" height="470" fill="#ffffff"/>
+
+  <!-- ============ panel titles ============ -->
+  <text x="250" y="34" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="15" font-weight="bold" fill="#1a1a1a">LoRA: adaptation in weight space</text>
+  <text x="250" y="54" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="11" fill="#6b6b6b">the trained update is folded into the weight matrix</text>
+
+  <text x="750" y="34" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="15" font-weight="bold" fill="#1a1a1a">LARA: adaptation in the residual stream</text>
+  <text x="750" y="54" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="11" fill="#6b6b6b">the block is unchanged and a correction is added to the activations</text>
+
+  <line x1="506" y1="22" x2="506" y2="412" stroke="#e4e4e4" stroke-width="1"/>
+
+  <!-- ============================================================ -->
+  <!-- LEFT PANEL : LoRA                                            -->
+  <!-- ============================================================ -->
+
+  <!-- W (frozen) -->
+  <text x="97" y="138" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="9" fill="#6b6b6b">frozen</text>
+  <rect x="52" y="145" width="90" height="90" fill="#e9e9e9" stroke="#a8a8a8" stroke-width="1.5"/>
+  <text x="97" y="198" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="22" font-style="italic" fill="#1a1a1a">W</text>
+  <text x="97" y="251" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="10" fill="#6b6b6b">d × k</text>
+
+  <text x="163" y="199" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="22" fill="#1a1a1a">+</text>
+  <text x="196" y="196" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="13" font-style="italic" fill="#1a1a1a">(α/r)</text>
+
+  <!-- B (trained, d x r) -->
+  <rect x="228" y="145" width="22" height="90" fill="#e9f2f8" stroke="#2f6f9f" stroke-width="2"/>
+  <text x="239" y="195" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="14" font-style="italic" fill="#1a1a1a">B</text>
+  <text x="239" y="251" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="10" fill="#6b6b6b">d × r</text>
+
+  <!-- A (trained, r x k) -->
+  <rect x="256" y="179" width="90" height="22" fill="#e9f2f8" stroke="#2f6f9f" stroke-width="2"/>
+  <text x="301" y="195" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="14" font-style="italic" fill="#1a1a1a">A</text>
+  <text x="301" y="219" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="10" fill="#6b6b6b">r × k</text>
+
+  <text x="287" y="270" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="10.5" fill="#2f6f9f">ΔW = BA, rank r</text>
+
+  <text x="368" y="199" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="20" fill="#1a1a1a">=</text>
+
+  <!-- effective weight -->
+  <text x="435" y="138" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="9" fill="#6b6b6b">effective weight</text>
+  <rect x="390" y="145" width="90" height="90" fill="#f2f6fa" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="435" y="196" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="14" font-style="italic" fill="#1a1a1a">W + ΔW</text>
+  <text x="435" y="251" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="10" fill="#6b6b6b">d × k</text>
+
+  <!-- what the layer computes -->
+  <text x="250" y="304" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="12.5" font-style="italic" fill="#1a1a1a">h<tspan dy="3.5" font-size="8.5">out</tspan><tspan dy="-3.5"> = (W + ΔW) h</tspan><tspan dy="3.5" font-size="8.5">in</tspan></text>
+
+  <!-- ============================================================ -->
+  <!-- RIGHT PANEL : LARA                                           -->
+  <!-- ============================================================ -->
+
+  <!-- residual stream -->
+  <line x1="600" y1="380" x2="600" y2="108" stroke="#1a1a1a" stroke-width="2"/>
+  <polygon points="600,100 596.2,108.5 603.8,108.5" fill="#1a1a1a"/>
+  <text x="600" y="396" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="10" fill="#6b6b6b">residual stream</text>
+
+  <!-- frozen block -->
+  <rect x="565" y="308" width="70" height="48" fill="#e9e9e9" stroke="#a8a8a8" stroke-width="1.5"/>
+  <text x="600" y="330" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="12" fill="#1a1a1a">layer ℓ</text>
+  <text x="600" y="345" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="9" fill="#6b6b6b">frozen</text>
+
+  <!-- tap -->
+  <circle cx="600" cy="290" r="3.5" fill="#2f6f9f"/>
+  <text x="590" y="286" text-anchor="end" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="12" font-style="italic" fill="#1a1a1a">h<tspan dy="3.5" font-size="8.5">ℓ</tspan></text>
+  <line x1="604" y1="290" x2="683" y2="290" stroke="#2f6f9f" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <polygon points="690,290 683,286.4 683,293.6" fill="#2f6f9f"/>
+
+  <!-- module group -->
+  <rect x="676" y="250" width="236" height="80" fill="none" stroke="#2f6f9f" stroke-width="1" stroke-dasharray="5 4" opacity="0.55"/>
+  <text x="794" y="348" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="10" fill="#2f6f9f">LARA module (trained), 2dr parameters</text>
+
+  <!-- LN -->
+  <rect x="690" y="268" width="48" height="44" fill="#e9f2f8" stroke="#2f6f9f" stroke-width="2"/>
+  <text x="714" y="295" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="13" fill="#1a1a1a">LN</text>
+
+  <line x1="738" y1="290" x2="751" y2="290" stroke="#1a1a1a" stroke-width="1.3"/>
+  <polygon points="758,290 751,286.4 751,293.6" fill="#1a1a1a"/>
+  <text x="748" y="281" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="9" fill="#6b6b6b">d</text>
+
+  <!-- W down -->
+  <rect x="758" y="268" width="56" height="44" fill="#e9f2f8" stroke="#2f6f9f" stroke-width="2"/>
+  <text x="786" y="288" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="13" font-style="italic" fill="#1a1a1a">W<tspan dy="-5" font-size="9" font-style="normal">↓</tspan></text>
+  <text x="786" y="304" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="8.5" fill="#6b6b6b">r × d</text>
+
+  <line x1="814" y1="290" x2="831" y2="290" stroke="#2f6f9f" stroke-width="1.6"/>
+  <polygon points="838,290 831,286.4 831,293.6" fill="#2f6f9f"/>
+  <text x="826" y="281" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="10.5" font-weight="bold" fill="#2f6f9f">r</text>
+
+  <!-- W up -->
+  <text x="866" y="258" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="8.5" fill="#6b6b6b">initialized to zero</text>
+  <rect x="838" y="268" width="56" height="44" fill="#e9f2f8" stroke="#2f6f9f" stroke-width="2"/>
+  <text x="866" y="288" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="13" font-style="italic" fill="#1a1a1a">W<tspan dy="-5" font-size="9" font-style="normal">↑</tspan></text>
+  <text x="866" y="304" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="8.5" fill="#6b6b6b">d × r</text>
+
+  <!-- return path to the stream -->
+  <polyline points="894,290 918,290 918,215 618,215" fill="none" stroke="#1a1a1a" stroke-width="1.3"/>
+  <polygon points="611,215 618,211.4 618,218.6" fill="#1a1a1a"/>
+  <text x="906" y="281" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="9" fill="#6b6b6b">d</text>
+  <text x="768" y="207" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="11.5" font-style="italic" fill="#1a1a1a">× α/r</text>
+
+  <!-- addition node -->
+  <circle cx="600" cy="215" r="9" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="600" y="220" text-anchor="middle" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="14" fill="#1a1a1a">+</text>
+
+  <text x="590" y="180" text-anchor="end" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="11.5" font-style="italic" fill="#1a1a1a">h<tspan dy="3.5" font-size="8">ℓ</tspan><tspan dy="-3.5"> + Δh</tspan><tspan dy="3.5" font-size="8">ℓ</tspan></text>
+  <text x="622" y="152" text-anchor="start" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="9" fill="#6b6b6b">one module at each layer in L</text>
+
+  <!-- ============ legend ============ -->
+  <rect x="32" y="392" width="14" height="10" fill="#e9e9e9" stroke="#a8a8a8" stroke-width="1.2"/>
+  <text x="52" y="401" text-anchor="start" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="9.5" fill="#6b6b6b">frozen (base weights)</text>
+  <rect x="172" y="392" width="14" height="10" fill="#e9f2f8" stroke="#2f6f9f" stroke-width="1.5"/>
+  <text x="192" y="401" text-anchor="start" font-family="Carlito, Calibri, DejaVu Sans, sans-serif" font-size="9.5" fill="#2f6f9f">trained</text>
+
+  <!-- ============ takeaway ============ -->
+  <line x1="30" y1="424" x2="970" y2="424" stroke="#e0e0e0" stroke-width="1"/>
+</svg>
