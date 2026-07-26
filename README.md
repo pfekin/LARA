@@ -20,7 +20,7 @@ Because the router works per token, behaviors are not a switch the user flips. T
 
 ### A use case
 
-Picture an assistant that runs entirely on the device, offline and private, with no round trip to a server. It ships with one frozen base and a small bank of adapters for code, math, medical, summarization, and a house style. It answers each query with the right specialist, chosen per token, and stays within a few gigabytes. To add a skill, adjust the tone, or fix a behavior, you ship a small adapter rather than a new model. The base never moves, so an update is megabytes over the wire instead of a full model download.
+Picture an assistant that runs entirely on the device, offline and private, with no round trip to a server. It ships with one frozen base and a small bank of adapters for code, math, medical, summarization, and a house style. It answers each query with the right specialist, chosen per token, and stays within a few gigabytes. To add a skill, adjust the tone, or fix a behavior, you ship a small adapter rather than a new model. The base never moves, so an update is megabytes instead of a full model download.
 
 ### A different angle on mixture-of-experts
 
