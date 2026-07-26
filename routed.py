@@ -283,7 +283,7 @@ def run_routed():
     rc.set_seed(rc.CFG["seed"])
     base, tok = rc.load_model(rc.CFG["model"], rc.CFG["quantization"])
     ft = rc.CFG["ft"]; dcfg = RCFG["dpo"]; domains = RCFG["domains"]; N = len(domains)
-    print(f"\n📥 {N} behaviors on one frozen base: {[d['name'] for d in domains]}")
+    print(f"\n {N} behaviors on one frozen base: {[d['name'] for d in domains]}")
 
     bridge_sets, behaviors, route_feats, route_labels = [], [], [], []
     for di, d in enumerate(domains):
