@@ -10,6 +10,10 @@ LARA adapts a frozen model by reading the hidden state at a small set of layers 
 
 This repository contains the code for the experiments in the accompanying paper (link to follow).
 
+![LoRA vs LARA](media/figure1_lora_vs_lara.svg)
+
+*LoRA adapts in weight space, LARA adapts in the residual stream. The base block stays frozen while a low-rank correction is read from the stream and added back.*
+
 ## Why this matters for local AI
 
 Running a capable model on a phone, a laptop, or an edge device hits a wall made of memory. One fine-tuned model is already large, and most real products need more than one behavior: a coding helper, a summarizer, a medical assistant, each with its own tone or safety rules. Shipping a separate fine-tuned model for every behavior multiplies the footprint until it stops fitting on the device.
