@@ -1,6 +1,5 @@
 # LARA
-
-**Lightweight Additive Residual Adaptation**: a residual-stream adapter for frozen language models.
+**Lightweight Additive Residual Adaptation**: residual-stream adapters for frozen LLMs, matching LoRA at equal parameters with inference-time steering and many behaviors per token.
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/)
