@@ -1,7 +1,7 @@
 """Self-tests for the lara package. No network, no HF download: a small
 stand-in model with the same interface as an HF causal LM.
 
-    python selftest.py
+    python test_lara.py
 """
 import shutil
 import tempfile
