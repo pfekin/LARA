@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lara-adapters"
+version = "0.1.0"
+description = "Lightweight Additive Residual Adaptation: residual-stream adapters for frozen language models, routed per token."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Pascal Ekin", email = "pfekin@gmail.com" }]
+keywords = ["peft", "lora", "adapters", "residual-stream", "routing", "llm"]
+dependencies = ["torch>=2.0", "safetensors>=0.4"]
+
+[project.optional-dependencies]
+examples = ["transformers>=4.40", "datasets", "accelerate", "trl"]
+
+[project.urls]
+Homepage = "https://github.com/pfekin/LARA"
+
+[tool.setuptools.packages.find]
+include = ["lara*"]
