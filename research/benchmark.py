@@ -71,7 +71,7 @@ CFG = {
 
     # ===== FINE-TUNING (task="ft") =====
     "ft": {
-        "train_url":   "https://raw.githubusercontent.com/pfekin/LARA/refs/heads/main/data/python_600.json",
+        "train_url":   "https://raw.githubusercontent.com/pfekin/LARA/refs/heads/main/research/data/python_600.json",
         "system_prompt": "You are an expert programmer. Provide precise code solutions and systems architectural reasoning.",
         "max_seq_len":   512,
         "indist_holdout":0.15,
