@@ -1,10 +1,13 @@
 # LARA
-
-**Lightweight Additive Residual Adaptation**: a residual-stream adapter for frozen language models.
+**Lightweight Additive Residual Adaptation**: residual-stream adapters for frozen LLMs, matching LoRA at equal parameters with inference-time steering and many behaviors per token.
 
 LARA adapts a frozen model by reading the hidden state at a small set of layers and adding a low-rank correction back to the residual stream. The base weights are never changed. On a code fine-tuning task and on preference optimization (DPO), LARA matches LoRA at equal parameter counts. Because each adapted behavior is a small module over a shared frozen base, many behaviors can be held resident at once and routed per token.
 
 This repository contains the code for the experiments in the accompanying paper (link to follow).
+
+![LoRA vs LARA](media/figure1_lora_vs_lara.svg)
+
+*LoRA adapts in weight space. LARA adapts in the residual stream. The base block stays frozen while a low-rank correction is read from the stream and added back.*
 
 ## Why this matters for local AI
 
@@ -16,7 +19,7 @@ Because the router works per token, behaviors are not a switch the user flips. T
 
 ### A use case
 
-Picture an assistant that runs entirely on the device, offline and private, with no round trip to a server. It ships with one frozen base and a small bank of adapters for code, math, medical, summarization, and a house style. It answers each query with the right specialist, chosen per token, and stays within a few gigabytes. To add a skill, adjust the tone, or fix a behavior, you ship a small adapter rather than a new model. The base never moves, so an update is megabytes over the wire instead of a full model download.
+Picture an assistant that runs entirely on the device, offline and private, with no round trip to a server. It ships with one frozen base and a small bank of adapters for code, math, medical, summarization, and a house style. It answers each query with the right specialist, chosen per token, and stays within a few gigabytes. To add a skill, adjust the tone, or fix a behavior, you ship a small adapter rather than a new model. The base never moves, so an update is megabytes instead of a full model download.
 
 ### A different angle on mixture-of-experts
 
@@ -24,9 +27,9 @@ Mixture-of-experts models showed that routing each token to a few specialized mo
 
 ## Contents
 
-`lara.py` trains a single behavior with LARA or LoRA and compares them at matched parameters, for fine-tuning (`task="ft"`) or preference optimization (`task="dpo"`). It also sweeps the scale gamma applied at inference.
+`benchmark.py` trains a single behavior with LARA or LoRA and compares them at matched parameters, for fine-tuning (`task="ft"`) or preference optimization (`task="dpo"`). It also sweeps the scale gamma applied at inference.
 
-`routed.py` places several behaviors on one frozen base and routes among them per token, hard or soft. It reports recovery, routing weights, and the co-application readout.
+`benchmark_routed.py` places several behaviors on one frozen base and routes among them per token, hard or soft. It reports recovery, routing weights, and the co-application readout.
 
 ## Requirements
 
@@ -41,23 +44,23 @@ pip install torch transformers peft datasets bitsandbytes accelerate
 Both scripts are driven by a configuration dictionary at the top of the file. Edit it, then run the file directly.
 
 ```
-# lara.py: set task="ft" for fine-tuning, task="dpo" for preference optimization
-python lara.py
+# benchmark.py: set task="ft" for fine-tuning, task="dpo" for preference optimization
+python benchmark.py
 
-# routed.py: set route_mode="soft" (blend) or "top1" (one behavior per token)
-python routed.py
+# benchmark_routed.py: set route_mode="soft" (blend) or "top1" (one behavior per token)
+python benchmark_routed.py
 ```
 
 Each script prints the trainable parameter counts for both methods and the result tables. Self-tests are available:
 
 ```
-python lara.py selftest
-python routed.py selftest
+python benchmark.py selftest
+python benchmark_routed.py selftest
 ```
 
 ## Configuration
 
-Main fields in `lara.py`:
+Main fields in `benchmark.py`:
 
 - `task`: `"ft"` or `"dpo"`
 - `arms`: methods to run, `["rc", "lora"]` (the `rc` arm is LARA)
@@ -65,7 +68,7 @@ Main fields in `lara.py`:
 - `rank`, `alpha`: LARA rank and scale
 - `lora_rank`, `lora_target`: the LoRA baseline, set to match LARA's parameter count
 
-Main fields in `routed.py`:
+Main fields in `benchmark_routed.py`:
 
 - `route_mode`: `"top1"` or `"soft"`
 - the behavior list: each entry names a dataset and its task (fine-tuning or DPO)
@@ -78,18 +81,7 @@ The scripts pull public datasets from the Hugging Face Hub: a code corpus, Datab
 
 At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, LARA reaches comparable fine-tuning perplexity and comparable DPO reward accuracy on Qwen2.5-1.5B-Instruct. The scale gamma, applied at inference, interpolates smoothly between the base and the adapted model. Seven behaviors sit on one frozen 3 GB base for about 33 MB of adapters and route per token. See the paper for the full tables.
 
-## Citation
-
-```
-@misc{lara2026,
-  title        = {LARA: Lightweight Adapters in the Residual Stream for
-                  Composable Adaptation and Alignment on Frozen Models},
-  author       = {Ekin, Pascal},
-  year         = {2026},
-  note         = {Preprint}
-}
-```
 
 ## License
 
-Add a license of your choice (for example, MIT).
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
