@@ -205,7 +205,7 @@ Covers layer resolution, the no-op at initialization, freezing, save and load, r
 
 ## Paper and experiments
 
-The benchmark code that produced the numbers in the paper, with the configuration and instructions to rerun it, is in [research.md](research.md).
+The benchmark code that produced the numbers in the paper, with the configuration and instructions to rerun it, is [here](research.md).
 
 
 ## License
