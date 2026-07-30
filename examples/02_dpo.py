@@ -48,9 +48,13 @@ ds = load_dataset("HuggingFaceH4/ultrafeedback_binarized", split="train_prefs[:5
 
 
 def to_pairs(ex):
-    return {"prompt": ex["prompt"],
-            "chosen": ex["chosen"][-1]["content"],
-            "rejected": ex["rejected"][-1]["content"]}
+    # Conversational format. TRL applies the chat template itself, so the join
+    # between prompt and completion falls on a special token rather than gluing
+    # two pieces of raw text together, where the tokenizer would merge across
+    # the seam. It also matches the format the instruct model was trained in.
+    return {"prompt": [{"role": "user", "content": ex["prompt"]}],
+            "chosen": [{"role": "assistant", "content": ex["chosen"][-1]["content"]}],
+            "rejected": [{"role": "assistant", "content": ex["rejected"][-1]["content"]}]}
 
 
 ds = ds.map(to_pairs, remove_columns=ds.column_names)
@@ -66,7 +70,7 @@ trainer = DPOTrainer(
     args=DPOConfig(
         output_dir="runs/polite", max_steps=60, learning_rate=2e-4,
         per_device_train_batch_size=1, gradient_accumulation_steps=16,
-        beta=5.0, max_length=256, precompute_ref_log_probs=True,
+        beta=5.0, max_length=512, precompute_ref_log_probs=True,
         logging_steps=10, save_strategy="no", bf16=True, report_to=[],
     ),
     train_dataset=ds,
@@ -75,7 +79,8 @@ trainer = DPOTrainer(
 trainer.train()
 
 # ── LARA (2/3): save, same artifact shape as any other behavior ──────────────
-lara.save(OUT, route_samples=[ex["prompt"] for ex in ds.select(range(200))], method="dpo")
+lara.save(OUT, route_samples=[ex["prompt"][0]["content"] for ex in ds.select(range(200))],
+          method="dpo")
 print(f"wrote {OUT}")
 
 # DPOConfig turns gradient checkpointing on and the KV cache off, and the trainer
@@ -106,18 +111,31 @@ def seq_logprob(prompt, completion, normalize=False):
     return (lp.mean() if normalize else lp.sum()).item()
 
 
-# TRL's DPO sums log probabilities over the completion. The paper's harness
-# normalizes by length instead, which divides the same shift by a hundred or so
-# tokens, so report both and compare like with like.
+# Evaluate in the same format the adapter was trained in: the chat template up
+# to the assistant turn is the prompt, the response text is the completion.
+pairs = []
+for ex in eval_ds:
+    p = tok.apply_chat_template(ex["prompt"], tokenize=False, add_generation_prompt=True)
+    pairs.append((p, ex["chosen"][0]["content"], ex["rejected"][0]["content"]))
+
+# Chosen responses in UltraFeedback are longer than rejected ones, and every
+# token adds a negative log probability, so a summed margin mostly measures
+# length: its accuracy comes out below chance. Normalizing by length is what
+# makes the preference signal visible, which is why the paper's harness does it.
+# The shift between gamma=0 and gamma=1 is the quantity to read here.
+stats = {}
 for g in (0.0, 1.0):
     lara.gamma = g
-    summed = [seq_logprob(ex["prompt"], ex["chosen"])
-              - seq_logprob(ex["prompt"], ex["rejected"]) for ex in eval_ds]
-    normed = [seq_logprob(ex["prompt"], ex["chosen"], normalize=True)
-              - seq_logprob(ex["prompt"], ex["rejected"], normalize=True) for ex in eval_ds]
-    acc = sum(m > 0 for m in summed) / len(summed)
-    print(f"gamma={g}  margin (summed) {sum(summed) / len(summed):+.3f}  "
-          f"(per token) {sum(normed) / len(normed):+.4f}  accuracy {acc:.3f}")
+    summed = [seq_logprob(p, c) - seq_logprob(p, r) for p, c, r in pairs]
+    normed = [seq_logprob(p, c, normalize=True) - seq_logprob(p, r, normalize=True)
+              for p, c, r in pairs]
+    stats[g] = (sum(summed) / len(summed), sum(normed) / len(normed),
+                sum(m > 0 for m in normed) / len(normed))
+    print(f"gamma={g}  margin/token {stats[g][1]:+.4f}  accuracy {stats[g][2]:.3f}  "
+          f"(summed {stats[g][0]:+.2f}, length dominated)")
+
+print(f"shift from the adapter: {stats[1.0][1] - stats[0.0][1]:+.4f} per token, "
+      f"{stats[1.0][0] - stats[0.0][0]:+.3f} summed")
 
 # a sample generation, for a qualitative look
 prompt = tok.apply_chat_template(
