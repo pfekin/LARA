@@ -5,7 +5,7 @@ ordinary HF training: LARA does not wrap, replace, or subclass the trainer.
 
     pip install torch transformers datasets accelerate
     python 01_finetune.py
-""" 
+"""
 import torch
 from datasets import load_dataset
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
@@ -69,9 +69,22 @@ prompt = tok.apply_chat_template(
     tokenize=False, add_generation_prompt=True)
 ids = tok(prompt, return_tensors="pt").to(model.device)
 
-for g in (0.0, 0.5, 1.0):
+# gamma is continuous, but greedy decoding takes an argmax at every step, so
+# nearby values often decode to identical text. The two ends show the shift.
+# To see the middle, read the logits (below) or sample instead of decoding greedily.
+for g in (0.0, 1.0):
     lara.gamma = g                    # 0.0 is the untouched base
     with torch.no_grad():
         out = model.generate(**ids, max_new_tokens=80, do_sample=False)
     print(f"\n─── gamma={g} " + "─" * 40)
     print(tok.decode(out[0][ids.input_ids.shape[1]:], skip_special_tokens=True))
+
+# the knob is continuous underneath: next-token entropy moves with gamma even
+# where the greedy path does not
+print()
+for g in (0.0, 0.25, 0.5, 0.75, 1.0):
+    lara.gamma = g
+    with torch.no_grad():
+        lp = torch.log_softmax(model(**ids).logits[0, -1], dim=-1)
+    print(f"gamma={g:<5} top={tok.decode(lp.argmax())!r:<12} "
+          f"logprob={lp.max():.3f}  entropy={-(lp.exp() * lp).sum():.3f}")
