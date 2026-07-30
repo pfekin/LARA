@@ -96,22 +96,28 @@ eval_ds = load_dataset("HuggingFaceH4/ultrafeedback_binarized",
 
 
 @torch.no_grad()
-def seq_logprob(prompt, completion):
+def seq_logprob(prompt, completion, normalize=False):
     p = tok(prompt, return_tensors="pt").input_ids.to(model.device)
     full = tok(prompt + completion, return_tensors="pt").input_ids.to(model.device)
     logits = model(full).logits[:, :-1]
     tgt = full[:, 1:]
     lp = torch.log_softmax(logits.float(), -1).gather(-1, tgt.unsqueeze(-1)).squeeze(-1)
     lp = lp[:, p.shape[1] - 1:]                     # completion tokens only
-    return lp.mean().item()                          # length normalized, as trained
+    return (lp.mean() if normalize else lp.sum()).item()
 
 
+# TRL's DPO sums log probabilities over the completion. The paper's harness
+# normalizes by length instead, which divides the same shift by a hundred or so
+# tokens, so report both and compare like with like.
 for g in (0.0, 1.0):
     lara.gamma = g
-    margins = [seq_logprob(ex["prompt"], ex["chosen"])
-               - seq_logprob(ex["prompt"], ex["rejected"]) for ex in eval_ds]
-    acc = sum(m > 0 for m in margins) / len(margins)
-    print(f"gamma={g}  mean margin {sum(margins) / len(margins):+.4f}  accuracy {acc:.3f}")
+    summed = [seq_logprob(ex["prompt"], ex["chosen"])
+              - seq_logprob(ex["prompt"], ex["rejected"]) for ex in eval_ds]
+    normed = [seq_logprob(ex["prompt"], ex["chosen"], normalize=True)
+              - seq_logprob(ex["prompt"], ex["rejected"], normalize=True) for ex in eval_ds]
+    acc = sum(m > 0 for m in summed) / len(summed)
+    print(f"gamma={g}  margin (summed) {sum(summed) / len(summed):+.3f}  "
+          f"(per token) {sum(normed) / len(normed):+.4f}  accuracy {acc:.3f}")
 
 # a sample generation, for a qualitative look
 prompt = tok.apply_chat_template(
