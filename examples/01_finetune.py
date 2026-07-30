@@ -63,6 +63,11 @@ samples = [ex["instruction"] for ex in raw.select(range(200))]
 lara.save(OUT, route_samples=samples, method="ce")
 print(f"wrote {OUT}")
 
+# put the model back into an inference state before generating
+model.gradient_checkpointing_disable()
+model.config.use_cache = True
+model.eval()
+
 # ── LARA (3/3): the scale is a runtime knob, no retraining ───────────────────
 prompt = tok.apply_chat_template(
     [{"role": "user", "content": "Write a function that reverses a linked list."}],
