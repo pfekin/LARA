@@ -1,7 +1,7 @@
 """Self-tests for the lara package. No network, no HF download: a small
 stand-in model with the same interface as an HF causal LM.
 
-    python test_lara.py
+    python selftest.py
 """
 import shutil
 import tempfile
@@ -249,10 +249,46 @@ def main():
     assert not torch.allclose(gpt(input_ids=x).logits, b0, atol=1e-6)
     ok("blocks returning tuples are handled alongside blocks returning tensors")
 
+    # ── 14. behaviors with different placements coexist in one bank ─────────
+    base2 = TinyLM()
+    paths = {}
+    for name, spec in (("wide", 6), ("narrow", 1)):
+        mm = TinyLM(); mm.load_state_dict(base2.state_dict(), strict=False)
+        L = LARA(mm, layers=spec, rank=8, alpha=8.0)
+        with torch.no_grad():
+            for mod in L.modules_.values():
+                mod.up.weight.normal_(0, 0.05)
+        L.save(f"{tmp}/{name}", route_samples=[f"{name} text {j}" for j in range(6)])
+        L.detach()
+        paths[name] = f"{tmp}/{name}"
+
+    mixed = Bank(base2, TinyTok())
+    mixed.add("wide", paths["wide"])          # six layers
+    mixed.add("narrow", paths["narrow"])      # one middle layer
+    assert mixed.behavior_layers[0] == [4, 8, 12, 16, 20, 24]
+    assert mixed.behavior_layers[1] == [14]
+    assert mixed.layer_ids == [4, 8, 12, 14, 16, 20, 24], mixed.layer_ids
+    w = mixed.route_weights(x)
+    assert abs(sum(w.values()) - 1.0) < 1e-4
+    off = None
+    with mixed.disabled():
+        off = base2(input_ids=x).logits.clone()
+    on = base2(input_ids=x).logits
+    assert not torch.allclose(off, on, atol=1e-6)
+    mixed.fit_router(steps=80)
+    mixed.save(f"{tmp}/mixedbank")
+    before = mixed.route_weights(x)
+    mixed.detach()
+    fresh2 = TinyLM(); fresh2.load_state_dict(base2.state_dict(), strict=False)
+    reload = Bank.load(f"{tmp}/mixedbank", fresh2, TinyTok())
+    assert reload.behavior_layers == [[4, 8, 12, 16, 20, 24], [14]], reload.behavior_layers
+    after = reload.route_weights(x)
+    assert all(abs(before[k] - after[k]) < 1e-4 for k in before)
+    ok("behaviors at different layers share one bank, and the bank roundtrips")
+
     shutil.rmtree(tmp, ignore_errors=True)
     print("\nALL SELFTESTS PASSED")
 
 
 if __name__ == "__main__":
     main()
-
