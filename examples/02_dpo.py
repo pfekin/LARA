@@ -4,8 +4,13 @@ Same three LARA lines as the fine-tuning example, a different objective. The
 artifact this produces is indistinguishable from a fine-tuned one: a directory
 of projections that a Bank can route alongside any other behavior.
 
-One perk of a frozen base: DPO needs a reference model, and the reference here
-is just the base with the modules switched off. No second copy in memory.
+DPO needs a reference model. Because the modules are zero-initialized, an
+untrained LARA model is exactly the base, so the reference log probabilities can
+be precomputed before the first step instead of loading a second copy of the
+model. See the comment on DPOConfig below for when that shortcut does not hold.
+
+Written against trl 1.9. TRL renames trainer arguments fairly often, so if this
+fails on an argument name, check the DPOConfig fields for your version.
 
     pip install torch transformers trl datasets accelerate
     python 02_dpo.py
@@ -42,15 +47,18 @@ def to_pairs(ex):
 
 ds = ds.map(to_pairs, remove_columns=ds.column_names)
 
-# ref_model=None makes TRL disable the adapters for the reference pass, which is
-# exactly the frozen base, so the reference costs nothing.
+# The reference model is the frozen base. Rather than load a second copy of it,
+# precompute the reference log probabilities before training starts: at that
+# point the modules are still zero-initialized, so the model *is* the base.
+# (That holds when training a fresh behavior, as here. If you continue training
+# an existing one, the modules are no longer zero and this shortcut is wrong.)
 trainer = DPOTrainer(
     model=model,
     ref_model=None,
     args=DPOConfig(
         output_dir="runs/polite", max_steps=60, learning_rate=2e-4,
         per_device_train_batch_size=1, gradient_accumulation_steps=16,
-        beta=5.0, max_prompt_length=128, max_length=256,
+        beta=5.0, max_length=256, precompute_ref_log_probs=True,
         logging_steps=10, save_strategy="no", bf16=True, report_to=[],
     ),
     train_dataset=ds,
@@ -62,7 +70,44 @@ trainer.train()
 lara.save(OUT, route_samples=[ex["prompt"] for ex in ds.select(range(200))], method="dpo")
 print(f"wrote {OUT}")
 
-# ── LARA (3/3): dial the alignment strength at inference ─────────────────────
+# DPOConfig turns gradient checkpointing on and the KV cache off, and the trainer
+# leaves the model in training mode. Generating in that state produces garbage,
+# so put the model back into an inference state first.
+model.gradient_checkpointing_disable()
+model.config.use_cache = True
+model.eval()
+
+# ── LARA (3/3): what DPO actually optimized ──────────────────────────────────
+# Reward accuracy on held out pairs: how often the adapted model prefers the
+# chosen response. This is the quantity DPO trains, and the one the paper
+# reports. Generation style is a softer thing and 60 steps may not move it.
+import torch.nn.functional as F
+
+eval_ds = load_dataset("HuggingFaceH4/ultrafeedback_binarized",
+                       split="test_prefs[:128]").map(to_pairs, remove_columns=None)
+
+
+@torch.no_grad()
+def seq_logprob(prompt, completion):
+    p = tok(prompt, return_tensors="pt").input_ids.to(model.device)
+    full = tok(prompt + completion, return_tensors="pt").input_ids.to(model.device)
+    logits = model(full).logits[:, :-1]
+    tgt = full[:, 1:]
+    lp = torch.log_softmax(logits.float(), -1).gather(-1, tgt.unsqueeze(-1)).squeeze(-1)
+    lp = lp[:, p.shape[1] - 1:]                     # completion tokens only
+    return lp.mean().item()                          # length normalized, as trained
+
+
+for g in (0.0, 1.0):
+    lara.gamma = g
+    correct = 0
+    for ex in eval_ds:
+        margin = (seq_logprob(ex["prompt"], ex["chosen"])
+                  - seq_logprob(ex["prompt"], ex["rejected"]))
+        correct += margin > 0
+    print(f"gamma={g}  reward accuracy {correct / len(eval_ds):.3f}")
+
+# a sample generation, for a qualitative look
 prompt = tok.apply_chat_template(
     [{"role": "user", "content": "My code crashed again. What now?"}],
     tokenize=False, add_generation_prompt=True)
