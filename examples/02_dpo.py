@@ -2,7 +2,15 @@
 
 Same three LARA lines as the fine-tuning example, a different objective. The
 artifact this produces is indistinguishable from a fine-tuned one: a directory
-of projections that a Bank can route alongside any other behavior.
+of projections that a Bank can route alongside any other behavior. That is what
+this example is for.
+
+It is not a reproduction of the paper. The paper's DPO numbers come from the
+harness in research/, which uses its own loss with an NLL anchor term that TRL
+does not apply, and settings tuned for it. Run at these settings on 512 pairs,
+the training loss falls a long way while held out accuracy barely moves, which
+is what overfitting a small preference set looks like. Treat the numbers below
+as a check that the modules trained, not as a result.
 
 DPO needs a reference model. Because the modules are zero-initialized, an
 untrained LARA model is exactly the base, so the reference log probabilities can
@@ -77,10 +85,10 @@ model.gradient_checkpointing_disable()
 model.config.use_cache = True
 model.eval()
 
-# ── LARA (3/3): what DPO actually optimized ──────────────────────────────────
-# Reward accuracy on held out pairs: how often the adapted model prefers the
-# chosen response. This is the quantity DPO trains, and the one the paper
-# reports. Generation style is a softer thing and 60 steps may not move it.
+# ── LARA (3/3): what DPO actually moved ──────────────────────────────────────
+# The margin between chosen and rejected is what DPO optimizes, and it is
+# continuous. Reward accuracy thresholds it at zero, so a real shift in the
+# margin can leave accuracy untouched if no pair crosses over.
 import torch.nn.functional as F
 
 eval_ds = load_dataset("HuggingFaceH4/ultrafeedback_binarized",
@@ -100,12 +108,10 @@ def seq_logprob(prompt, completion):
 
 for g in (0.0, 1.0):
     lara.gamma = g
-    correct = 0
-    for ex in eval_ds:
-        margin = (seq_logprob(ex["prompt"], ex["chosen"])
-                  - seq_logprob(ex["prompt"], ex["rejected"]))
-        correct += margin > 0
-    print(f"gamma={g}  reward accuracy {correct / len(eval_ds):.3f}")
+    margins = [seq_logprob(ex["prompt"], ex["chosen"])
+               - seq_logprob(ex["prompt"], ex["rejected"]) for ex in eval_ds]
+    acc = sum(m > 0 for m in margins) / len(margins)
+    print(f"gamma={g}  mean margin {sum(margins) / len(margins):+.4f}  accuracy {acc:.3f}")
 
 # a sample generation, for a qualitative look
 prompt = tok.apply_chat_template(
