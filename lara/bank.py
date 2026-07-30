@@ -97,6 +97,7 @@ class Bank:
 
         self.names: list[str] = []
         self.sets: list[nn.ModuleDict] = []
+        self.behavior_layers: list[list[int]] = []
         self.samples: dict[str, list[str]] = {}
         self.layer_ids: list[int] | None = None
         self._route_layer = route_layer
@@ -129,13 +130,9 @@ class Bank:
             samp = samples or samp
 
         layers = list(cfg["layers"])
-        if self.layer_ids is None:
-            self.layer_ids = layers
-        elif layers != self.layer_ids:
-            raise ValueError(
-                f"behavior '{name}' sits at layers {layers} but the bank uses "
-                f"{self.layer_ids}. Behaviors in one bank must share a placement."
-            )
+        # behaviors may sit at different layers; the bank hooks the union and
+        # each behavior contributes only where it has a module
+        self.layer_ids = sorted(set(self.layer_ids or []) | set(layers))
 
         mods = nn.ModuleDict({
             str(l): LARAModule(self.d, cfg["rank"], cfg["alpha"]).to(self.device)
@@ -148,6 +145,7 @@ class Bank:
 
         self.names.append(name)
         self.sets.append(mods)
+        self.behavior_layers.append(layers)
         self._store.append(mods)
         self.samples[name] = list(samp)
 
@@ -161,8 +159,10 @@ class Bank:
 
     def remove(self, name):
         i = self._index(name)
-        for coll in (self.names, self.sets):
+        for coll in (self.names, self.sets, self.behavior_layers):
             coll.pop(i)
+        self.layer_ids = (sorted({l for ls in self.behavior_layers for l in ls})
+                          if self.behavior_layers else None)
         self.samples.pop(name, None)
         self._store = nn.ModuleList(self.sets)
         setattr(self.model, self.ATTR, self._store)
@@ -240,7 +240,10 @@ class Bank:
             for k, mods in enumerate(self.sets):
                 if not active[k]:               # zero routing weight: skip the work
                     continue
-                m = mods[str(l)]
+                key = str(l)
+                if key not in mods:             # this behavior sits elsewhere
+                    continue
+                m = mods[key]
                 d = m.delta(hs) * m.gamma
                 d = d * w[..., k].unsqueeze(-1).to(d.dtype)
                 acc = d if acc is None else acc + d
@@ -284,7 +287,8 @@ class Bank:
 
     @property
     def gamma(self):
-        return {n: self.sets[i][str(self.layer_ids[0])].gamma for i, n in enumerate(self.names)}
+        return {n: self.sets[i][str(self.behavior_layers[i][0])].gamma
+                for i, n in enumerate(self.names)}
 
     @gamma.setter
     def gamma(self, g):
@@ -418,9 +422,10 @@ class Bank:
                 save_file(state, os.path.join(sub, "adapter.safetensors"))
             except ImportError:
                 torch.save(state, os.path.join(sub, "adapter.pt"))
-            m0 = self.sets[i][str(self.layer_ids[0])]
+            blayers = self.behavior_layers[i]
+            m0 = self.sets[i][str(blayers[0])]
             with open(os.path.join(sub, "config.json"), "w") as f:
-                json.dump({"layers": self.layer_ids,
+                json.dump({"layers": blayers,
                            "rank": m0.down.out_features,
                            "alpha": m0.scaling * m0.down.out_features,
                            "base_model_id": meta["base_model_id"]}, f, indent=2)
