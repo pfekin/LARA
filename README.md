@@ -8,6 +8,8 @@ Lightweight Additive Residual Adaptation: residual-stream adapters for frozen LL
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+
 
 </div>
 
@@ -232,8 +234,3 @@ The benchmark code that produced the numbers in the [preprint](https://doi.org/1
   note={Preprint}
 }
 ```
-
-
-## License
-
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
