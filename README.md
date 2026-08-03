@@ -205,7 +205,28 @@ Covers layer resolution, the no-op at initialization, freezing, save and load, r
 
 ## Paper and experiments
 
-The benchmark code that produced the numbers in the paper, with the configuration and instructions to rerun it, is [here](research.md).
+The benchmark code that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669), with the configuration and instructions to rerun it, is [here](research.md).
+
+## Citation
+
+```bibtex
+@software{ekin2026lara,
+  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs.},
+  author  = {Pascal Ekin},
+  year    = {2026},
+  url     = {https://github.com/pfekin/LARA}
+}
+
+@article{ekinchoijie2026lara,
+  title={LARA: Lightweight Adapters in the Residual Stream for Composable Adaptation and Alignment},
+  author={Pascal Ekin, Hyosun Choi, Wei Jie},
+  journal={arXiv}, 
+  year={2026},
+  doi={10.48550/arXiv.2607.28669},  
+  url={https://doi.org/10.48550/arXiv.2607.28669},
+  note={Preprint}
+}
+```
 
 
 ## License
