@@ -3,7 +3,7 @@ Lightweight Additive Residual Adaptation: residual-stream adapters for frozen LL
 
 LARA adapts a frozen model by reading the hidden state at a small set of layers and adding a low-rank correction back to the residual stream. The base weights are never changed. On a code fine-tuning task and on preference optimization (DPO), LARA matches LoRA at equal parameter counts. Because each adapted behavior is a small module over a shared frozen base, many behaviors can be held resident at once and routed per token.
 
-This repository contains the code for the experiments in the accompanying paper (link to follow).
+This repository contains the code for the experiments in the accompanying [preprint](https://doi.org/10.48550/arXiv.2607.28669).
 
 ![LoRA vs LARA](media/figure1_lora_vs_lara.svg)
 
@@ -80,6 +80,27 @@ The scripts pull public datasets from the Hugging Face Hub: a code corpus, Datab
 ## Results
 
 At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, LARA reaches comparable fine-tuning perplexity and comparable DPO reward accuracy on Qwen2.5-1.5B-Instruct. The scale gamma, applied at inference, interpolates smoothly between the base and the adapted model. Seven behaviors sit on one frozen 3 GB base for about 33 MB of adapters and route per token. See the paper for the full tables.
+
+## Citation
+
+```bibtex
+@software{ekin2026lara,
+  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs.},
+  author  = {Pascal Ekin},
+  year    = {2026},
+  url     = {https://github.com/pfekin/LARA}
+}
+
+@article{ekinchoijie2026lara,
+  title={LARA: Lightweight Adapters in the Residual Stream for Composable Adaptation and Alignment},
+  author={Pascal Ekin, Hyosun Choi, Wei Jie},
+  journal={arXiv}, 
+  year={2026},
+  doi={10.48550/arXiv.2607.28669},  
+  url={https://doi.org/10.48550/arXiv.2607.28669},
+  note={Preprint}
+}
+```
 
 
 ## License
