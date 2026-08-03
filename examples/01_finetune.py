@@ -21,7 +21,7 @@ tok = AutoTokenizer.from_pretrained(BASE)
 tok.pad_token = tok.pad_token or tok.eos_token
 model = AutoModelForCausalLM.from_pretrained(BASE, dtype=torch.bfloat16, device_map="auto")
 
-# ── LARA (1/3): attach modules to the frozen base ────────────────────────────
+# ── LARA (1/3): attach modules to the frozen base
 # `layers=6` spreads six modules evenly over the depth. On a 28-layer model that
 # is [4, 8, 12, 16, 20, 24]. Pass a list if you want exact control.
 lara = LARA(model, layers=6, rank=128, alpha=128)
@@ -42,7 +42,7 @@ def tokenize(ex):
 
 ds = raw.map(to_text).map(tokenize, batched=True, remove_columns=raw.column_names)
 
-# ── any trainer works: LARA only requires that the base stays frozen ─────────
+# ── any trainer works: LARA only requires that the base stays frozen
 trainer = Trainer(
     model=model,                      # the model itself; LARA rides along inside it
     args=TrainingArguments(
@@ -55,7 +55,7 @@ trainer = Trainer(
 )
 trainer.train()
 
-# ── LARA (2/3): save the behavior ────────────────────────────────────────────
+# ── LARA (2/3): save the behavior
 # `route_samples` are short texts typical of this behavior. A Bank uses them to
 # fit its router later, so the behavior can be shared and still routed without
 # anyone needing this training set again.
@@ -68,7 +68,7 @@ model.gradient_checkpointing_disable()
 model.config.use_cache = True
 model.eval()
 
-# ── LARA (3/3): the scale is a runtime knob, no retraining ───────────────────
+# ── LARA (3/3): the scale is a runtime knob, no retraining
 prompt = tok.apply_chat_template(
     [{"role": "user", "content": "Write a function that reverses a linked list."}],
     tokenize=False, add_generation_prompt=True)
