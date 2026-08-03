@@ -224,13 +224,13 @@ The benchmark [code](https://github.com/pfekin/LARA/tree/main/research) that pro
   url     = {https://github.com/pfekin/LARA}
 }
 
-@article{ekinchoijie2026lara,
-  title={LARA: Lightweight Adapters in the Residual Stream for Composable Adaptation and Alignment},
-  author={Pascal Ekin, Hyosun Choi, Wei Jie},
-  journal={arXiv}, 
-  year={2026},
-  doi={10.48550/arXiv.2607.28669},  
-  url={https://doi.org/10.48550/arXiv.2607.28669},
-  note={Preprint}
+@article{ekin2026laralightweightadaptersresidual,
+      title={LARA: Lightweight Adapters in the Residual Stream for Composable Adaptation and Alignment}, 
+      author={Pascal Ekin and Hyosun Choi and Wei Jie},
+      year={2026},
+      eprint={2607.28669},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2607.28669}, 
 }
 ```
