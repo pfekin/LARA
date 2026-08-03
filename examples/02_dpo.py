@@ -71,10 +71,11 @@ trainer = DPOTrainer(
         output_dir="runs/polite", max_steps=60, learning_rate=2e-4,
         per_device_train_batch_size=1, gradient_accumulation_steps=16,
         beta=5.0, max_length=512, precompute_ref_log_probs=True,
-        # A decaying schedule makes the last steps small, so the run comes to
-        # rest instead of stopping wherever the walk happened to be. Without it
-        # the final loss bounces and the stopping point is arbitrary.
-        warmup_ratio=0.1, lr_scheduler_type="cosine",
+        # No warmup or decay schedule here. Both were tried: over 60 steps the
+        # warmup ramp raises the loss for the first third of the run and the
+        # held out shift came out lower than with a constant rate. The training
+        # curve is noisy at this batch size, which is expected, and the number
+        # worth reading is the shift on held out pairs below.
         logging_steps=5, save_strategy="no", bf16=True, report_to=[],
     ),
     train_dataset=ds,
@@ -83,7 +84,10 @@ trainer = DPOTrainer(
 trainer.train()
 
 # ── LARA (2/3): save, same artifact shape as any other behavior
-lara.save(OUT, route_samples=[ex["prompt"][0]["content"] for ex in ds.select(range(200))],
+# The route samples are the preferred responses, not the prompts. A behavior is
+# characterized by the text it produces, and the router reads the stream while
+# that text is being generated.
+lara.save(OUT, route_samples=[ex["chosen"][0]["content"] for ex in ds.select(range(200))],
           method="dpo")
 print(f"wrote {OUT}")
 
