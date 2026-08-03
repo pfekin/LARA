@@ -85,7 +85,7 @@ At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, 
 
 ```bibtex
 @software{ekin2026lara,
-  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs.},
+  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs. Runs many behaviors per token.},
   author  = {Pascal Ekin},
   year    = {2026},
   url     = {https://github.com/pfekin/LARA}
