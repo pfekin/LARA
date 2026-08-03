@@ -211,7 +211,7 @@ The benchmark code that produced the numbers in the [preprint](https://doi.org/1
 
 ```bibtex
 @software{ekin2026lara,
-  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs.},
+  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs. Runs many behaviors per token.},
   author  = {Pascal Ekin},
   year    = {2026},
   url     = {https://github.com/pfekin/LARA}
