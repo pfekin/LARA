@@ -4,7 +4,7 @@ The only LARA-specific lines are the three marked below. Everything else is
 ordinary HF training: LARA does not wrap, replace, or subclass the trainer.
 
     pip install torch transformers datasets accelerate
-    python 01_finetune.py
+    python examples/01_finetune.py
 """
 import torch
 from datasets import load_dataset
@@ -21,7 +21,7 @@ tok = AutoTokenizer.from_pretrained(BASE)
 tok.pad_token = tok.pad_token or tok.eos_token
 model = AutoModelForCausalLM.from_pretrained(BASE, dtype=torch.bfloat16, device_map="auto")
 
-# ── LARA (1/3): attach modules to the frozen base
+# ── LARA (1/3): attach modules to the frozen base ────────────────────────────
 # `layers=6` spreads six modules evenly over the depth. On a 28-layer model that
 # is [4, 8, 12, 16, 20, 24]. Pass a list if you want exact control.
 lara = LARA(model, layers=6, rank=128, alpha=128)
@@ -59,7 +59,12 @@ trainer.train()
 # `route_samples` are short texts typical of this behavior. A Bank uses them to
 # fit its router later, so the behavior can be shared and still routed without
 # anyone needing this training set again.
-samples = [ex["instruction"] for ex in raw.select(range(200))]
+#
+# Use the outputs, not the instructions. The instructions in this corpus are
+# English questions about code, so a router fitted on them would be separating
+# two sets of English prose and could latch onto something incidental. The
+# outputs are the code itself, which is what distinguishes this behavior.
+samples = [ex["output"] for ex in raw.select(range(200))]
 lara.save(OUT, route_samples=samples, method="ce")
 print(f"wrote {OUT}")
 
