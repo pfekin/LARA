@@ -37,7 +37,7 @@ tok = AutoTokenizer.from_pretrained(BASE)
 tok.pad_token = tok.pad_token or tok.eos_token
 model = AutoModelForCausalLM.from_pretrained(BASE, dtype=torch.bfloat16, device_map="auto")
 
-# ── LARA (1/3): attach ───────────────────────────────────────────────────────
+# ── LARA (1/3): attach
 # Preference optimization is less demanding about placement than fine-tuning:
 # a single middle module reaches parity with six. `layers=1` resolves to [14]
 # on a 28-layer model.
@@ -82,7 +82,7 @@ trainer = DPOTrainer(
 )
 trainer.train()
 
-# ── LARA (2/3): save, same artifact shape as any other behavior ──────────────
+# ── LARA (2/3): save, same artifact shape as any other behavior
 lara.save(OUT, route_samples=[ex["prompt"][0]["content"] for ex in ds.select(range(200))],
           method="dpo")
 print(f"wrote {OUT}")
@@ -94,7 +94,7 @@ model.gradient_checkpointing_disable()
 model.config.use_cache = True
 model.eval()
 
-# ── LARA (3/3): what DPO actually moved ──────────────────────────────────────
+# ── LARA (3/3): what DPO actually moved
 # The margin between chosen and rejected is what DPO optimizes, and it is
 # continuous. Reward accuracy thresholds it at zero, so a real shift in the
 # margin can leave accuracy untouched if no pair crosses over.
