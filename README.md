@@ -2,10 +2,14 @@
 
 Lightweight Additive Residual Adaptation: residual-stream adapters for frozen LLMs. Matches LoRA at equal parameters, runs many behaviors per token.
 
+<div align="center">    
+    
 [![arXiv](https://img.shields.io/badge/arXiv-2501.12345-b31b1b.svg)](https://doi.org/10.48550/arXiv.2607.28669)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/)
+
+</div>
 
 LARA adapts a language model without writing to its weights. At a small set of layers it reads the hidden state, computes a low-rank correction, and adds it back to the residual stream. The base model is loaded once and stays frozen, so each adapted behavior is a separate file of a few megabytes, and several of them can sit on one model at the same time.
 
@@ -206,7 +210,7 @@ Covers layer resolution, the no-op at initialization, freezing, save and load, r
 
 ## Paper and experiments
 
-The benchmark code that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669), with the configuration and instructions to rerun it, is [here](research.md).
+The benchmark code that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669), with the configuration and instructions to rerun it, is [research.md](research.md).
 
 ## Citation
 
