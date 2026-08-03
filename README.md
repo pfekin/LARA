@@ -212,7 +212,7 @@ Covers layer resolution, the no-op at initialization, freezing, save and load, r
 
 ## Paper and experiments
 
-The benchmark code that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669), with the configuration and instructions to rerun it, is [research.md](research.md).
+The [benchmark code](https://github.com/pfekin/LARA/tree/main/research) that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669), with the [configuration and instructions](research.md) to rerun it.
 
 ## Citation
 
