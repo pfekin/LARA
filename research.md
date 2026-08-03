@@ -84,13 +84,6 @@ At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, 
 ## Citation
 
 ```bibtex
-@software{ekin2026lara,
-  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs. Runs many behaviors per token.},
-  author  = {Pascal Ekin},
-  year    = {2026},
-  url     = {https://github.com/pfekin/LARA}
-}
-
 @article{ekinchoijie2026lara,
   title={LARA: Lightweight Adapters in the Residual Stream for Composable Adaptation and Alignment},
   author={Pascal Ekin, Hyosun Choi, Wei Jie},
@@ -99,6 +92,13 @@ At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, 
   doi={10.48550/arXiv.2607.28669},  
   url={https://doi.org/10.48550/arXiv.2607.28669},
   note={Preprint}
+}
+
+@software{ekin2026lara,
+  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs. Runs many behaviors per token.},
+  author  = {Pascal Ekin},
+  year    = {2026},
+  url     = {https://github.com/pfekin/LARA}
 }
 ```
 
