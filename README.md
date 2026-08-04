@@ -225,13 +225,6 @@ The benchmark [code](https://github.com/pfekin/LARA/tree/main/research) that pro
 ## Citation
 
 ```bibtex
-@software{ekin2026lara,
-  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs. Runs many behaviors per token.},
-  author  = {Pascal Ekin},
-  year    = {2026},
-  url     = {https://github.com/pfekin/LARA}
-}
-
 @article{ekin2026laralightweightadaptersresidual,
       title={LARA: Lightweight Adapters in the Residual Stream for Composable Adaptation and Alignment}, 
       author={Pascal Ekin and Hyosun Choi and Wei Jie},
@@ -240,5 +233,11 @@ The benchmark [code](https://github.com/pfekin/LARA/tree/main/research) that pro
       archivePrefix={arXiv},
       primaryClass={cs.LG},
       url={https://arxiv.org/abs/2607.28669}, 
+}
+@software{ekin2026lara,
+  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs. Runs many behaviors per token.},
+  author  = {Pascal Ekin},
+  year    = {2026},
+  url     = {https://github.com/pfekin/LARA}
 }
 ```
