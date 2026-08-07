@@ -81,6 +81,27 @@ The scripts pull public datasets from the Hugging Face Hub: a code corpus, Datab
 
 At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, LARA reaches comparable fine-tuning perplexity and comparable DPO reward accuracy on Qwen2.5-1.5B-Instruct. The scale gamma, applied at inference, interpolates smoothly between the base and the adapted model. Seven behaviors sit on one frozen 3 GB base for about 33 MB of adapters and route per token. See the paper for the full tables.
 
+## Observations outside the benchmarks
+
+Everything above is measured. This is not.
+
+### Thai
+
+A behavior trained for Thai works well in interactive use. This was an informal
+trial rather than a benchmark run, and the configuration was not recorded.
+
+Perplexity does not capture it. Perplexity averages surprise across a corpus and
+is dominated by the positions that were already correct, while the adaptation
+changes a small fraction of them sharply. Where the adapted output is more
+fluent than the reference text, perplexity moves the wrong way.
+
+Supporting a claim would need blind pairwise preference between base and adapted
+output, judged by native speakers. That has not been done.
+
+Thai is already partly represented in the base, so the correction has something
+to act on. A low-rank correction is not expected to install a language the base
+does not represent.
+
 ## Citation
 
 ```bibtex
