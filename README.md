@@ -18,7 +18,12 @@ Lightweight Additive Residual Adaptation: residual-stream adapters for frozen LL
 
 </div>
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_hero_dark.png">
+  <img alt="LARA reads the hidden state between layers, computes a low-rank correction, and adds it back to the residual stream" src="media/LARA_readme_hero.png">
+</picture>
 
+[Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/b2d1e8b0-c25d-40fe-af77-64a3f2c6ae47) — the idea in eleven slides.
 
 
 LARA adapts a language model without writing to its weights. At a small set of layers it reads the hidden state, computes a low-rank correction, and adds it back to the residual stream. The base model is loaded once and stays frozen, so each adapted behavior is a separate file of a few megabytes, and several of them can sit on one model at the same time.
@@ -133,6 +138,10 @@ bank.top_k = None    # blend all of them by weight (default)
 bank.top_k = 2       # blend the two highest, ignore the rest
 bank.top_k = 1       # hard selection, one behavior per token
 ```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_routing_dark.png">
+  <img alt="Routing weight across a sentence: the mix shifts from finance to code to summarizing as the text is generated" src="media/LARA_readme_routing.png">
+</picture>
 
 Behaviors with no weight are skipped, so cost tracks `top_k` rather than the size of the bank. Blending is worth having when behaviors overlap, since a token the router is unsure about gets a mixture rather than a single wrong choice.
 
