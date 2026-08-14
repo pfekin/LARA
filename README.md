@@ -81,11 +81,6 @@ LARA does not replace or wrap the trainer. It attaches the modules to the model 
 
 Fine-tuning benefits from several insertion points. Preference optimization reaches the same quality with a single module in the middle of the network, and a policy gradient behaved the same way in testing, so `layers=1` is often enough for both.
 
-
-
-
-Fine-tuning benefits from several layers. Preference optimization reaches the same quality with one module in the middle of the network, so `layers=1` is often enough there.
-
 ## Turn the adaptation up or down
 
 The correction is additive over an unchanged base, so its strength is a runtime value rather than something fixed at training time:
