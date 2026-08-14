@@ -1,7 +1,12 @@
 # LARA
 Lightweight Additive Residual Adaptation: residual-stream adapters for frozen LLMs. Matches LoRA at equal parameters, runs many behaviors per token.
 
-LARA adapts a frozen model by reading the hidden state at a small set of layers and adding a low-rank correction back to the residual stream. The base weights are never changed. On a code fine-tuning task and on preference optimization (DPO), LARA matches LoRA at equal parameter counts. Because each adapted behavior is a small module over a shared frozen base, many behaviors can be held resident at once and routed per token.
+LARA adapts a frozen model by reading the hidden state at a small set of layers and adding a low-rank correction back to the residual stream. The base weights are never changed. 
+
+
+
+At equal parameter counts, LARA matches LoRA on a code fine-tuning task and on preference optimization. Under GRPO against a rule checker it reached the same score as a LoRA with sixteen times the parameters, though at evaluation sizes too small to separate the two.
+Because each adapted behavior is a small module over a shared frozen base, many behaviors can be held resident at once and routed per token.
 
 This repository contains the code for the experiments in the accompanying [preprint](https://doi.org/10.48550/arXiv.2607.28669).
 
