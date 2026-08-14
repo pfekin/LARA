@@ -83,11 +83,23 @@ The scripts pull public datasets from the Hugging Face Hub: a code corpus, Datab
 
 ## Results
 
-At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, LARA reaches comparable fine-tuning perplexity and comparable DPO reward accuracy on Qwen2.5-1.5B-Instruct. The scale gamma, applied at inference, interpolates smoothly between the base and the adapted model. Seven behaviors sit on one frozen 3 GB base for about 33 MB of adapters and route per token. See the paper for the full tables.
+At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, LARA reaches comparable fine-tuning perplexity and comparable DPO reward accuracy on Qwen2.5-1.5B-Instruct. A third objective, GRPO against a rule checker on Qwen3-1.7B, was tested at unmatched budgets: a 530k-parameter behavior reached the same score as an 8.7M-parameter LoRA, on evaluation sets too small to separate the two. The scale gamma, applied at inference, interpolates smoothly between the base and the adapted model. Seven behaviors sit on one frozen 3 GB base for about 33 MB of adapters and route per token. See the paper for the full tables.
 
 ## Observations outside the benchmarks
 
-Everything above is measured. This is not.
+Everything above is measured. This section is not.
+
+### Reinforcement learning
+
+A behavior trained with GRPO against a rule checker: follow a set of formatting constraints exactly, where the reward is the share satisfied. A LoRA went through the same loop on the same prompts for comparison.
+
+On Qwen3-1.7B, a single-module behavior at rank 128 reached 28% of prompts with every constraint satisfied, against 29% for a LoRA at rank 8 across seven target modules, from a base at 2%. That is 530k trainable parameters against 8.7M, and 2.2 MB on disk against 34.9 MB.
+
+Two things worth stating alongside that. The evaluation sets were 300 prompts, so differences under about six points are not resolvable and the two methods should be read as level rather than one leading. And on three constraint types held back from training entirely, both reached 10-11% against a 2% base, so neither learned to follow an instruction so much as the nine rules it saw.
+
+The strength dial made the overfitting visible. Trained constraint types improved monotonically up to strength 2.0 while held-out types peaked at 0.5 and declined after. A weight-space adapter has one setting and cannot show this.
+
+Notebook: [examples/reinforcement_learning/grpo.ipynb](https://github.com/pfekin/LARA/blob/main/examples/reinforcement_learning/grpo.ipynb)
 
 ### Thai
 
