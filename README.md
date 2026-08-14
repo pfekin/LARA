@@ -77,7 +77,11 @@ lara.save("behaviors/code", route_samples=prompts[:200])
 
 `layers=6` spreads six modules evenly over the depth. On a 28-layer model that resolves to `[4, 8, 12, 16, 20, 24]`. Pass a list instead for exact control.
 
-LARA does not replace or wrap the trainer. It attaches the modules to the model and freezes everything else, so `model.parameters()` reaches the modules and any trainer picks them up: the HF `Trainer`, TRL's `DPOTrainer` or `GRPOTrainer`, or a loop you wrote yourself. The objective makes no difference to the artifact. A behavior trained with DPO loads and routes exactly like one trained with cross-entropy.
+LARA does not replace or wrap the trainer. It attaches the modules to the model and freezes everything else, so `model.parameters()` reaches the modules and any trainer picks them up: the HF `Trainer`, TRL's `DPOTrainer` or `GRPOTrainer`, or a loop you wrote yourself. The objective makes no difference to the artifact. A behavior trained with cross-entropy, with DPO, or with a policy gradient loads and routes exactly the same way.
+Fine-tuning benefits from several insertion points. Preference optimization reaches the same quality with a single module in the middle of the network, and a policy gradient behaved the same way in testing, so `layers=1` is often enough for both.
+
+
+
 
 Fine-tuning benefits from several layers. Preference optimization reaches the same quality with one module in the middle of the network, so `layers=1` is often enough there.
 
