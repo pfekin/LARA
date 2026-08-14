@@ -83,7 +83,7 @@ The scripts pull public datasets from the Hugging Face Hub: a code corpus, Datab
 
 ## Results
 
-At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, LARA reaches comparable fine-tuning perplexity and comparable DPO reward accuracy on Qwen2.5-1.5B-Instruct. A third objective, GRPO against a rule checker on Qwen3-1.7B, was tested at unmatched budgets: a 530k-parameter behavior reached the same score as an 8.7M-parameter LoRA, on evaluation sets too small to separate the two. The scale gamma, applied at inference, interpolates smoothly between the base and the adapted model. Seven behaviors sit on one frozen 3 GB base for about 33 MB of adapters and route per token. See the paper for the full tables.
+At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, LARA reaches comparable fine-tuning perplexity and comparable DPO reward accuracy on Qwen2.5-1.5B-Instruct. A third objective, GRPO against a rule checker on Qwen3-1.7B, was tested at unmatched budgets: a 530k-parameter behavior scored within noise of an 8.7M-parameter LoRA. The scale gamma, applied at inference, interpolates smoothly between the base and the adapted model. Seven behaviors sit on one frozen 3 GB base for about 33 MB of adapters and route per token. See the paper for the fine-tuning and preference results.
 
 ## Observations outside the benchmarks
 
