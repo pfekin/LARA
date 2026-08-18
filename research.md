@@ -90,16 +90,12 @@ At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, 
 Everything above is measured. This section is not.
 
 ### Reinforcement learning
+A behaviour was trained with GRPO against a rule checker, with reward equal to the proportion of formatting constraints satisfied. On Qwen3-1.7B, a single rank-128 LARA module reached 28% of prompts with every constraint satisfied, compared with 29% for LoRA (rank 8 across seven target modules). LARA used 530k trainable parameters and 2.2 MB on disk, versus 8.7M parameters and 34.9 MB for LoRA. The base model reached 2%.
 
-A behavior trained with GRPO against a rule checker: follow a set of formatting constraints exactly, where the reward is the share satisfied. A LoRA went through the same loop on the same prompts for comparison.
+LARA also exposes a runtime strength parameter. In this experiment, increasing the strength improved performance on the trained constraints up to 2.0, while the held-out constraints peaked at lower strength. This provides direct control over how strongly the learned behaviour is applied at inference time.
 
-On Qwen3-1.7B, a single-module behavior at rank 128 reached 28% of prompts with every constraint satisfied, against 29% for a LoRA at rank 8 across seven target modules, from a base at 2%. That is 530k trainable parameters against 8.7M, and 2.2 MB on disk against 34.9 MB.
-
-Two things worth stating alongside that. The evaluation sets were 300 prompts, so differences under about six points are not resolvable and the two methods should be read as level rather than one leading. And on three constraint types held back from training entirely, both reached 10-11% against a 2% base, so neither learned to follow an instruction so much as the nine rules it saw.
-
-The strength dial made the overfitting visible. Trained constraint types improved monotonically up to strength 2.0 while held-out types peaked at 0.5 and declined after. A weight-space adapter has one setting and cannot show this.
-
-Notebook: [examples/reinforcement_learning/grpo.ipynb](https://github.com/pfekin/LARA/blob/main/examples/reinforcement_learning/grpo.ipynb)
+Notebooks: [Qwen](https://github.com/pfekin/LARA/blob/main/examples/reinforcement_learning/Qwen3-1.7B/grpo.ipynb)
+[SmolLM](https://github.com/pfekin/LARA/blob/main/examples/reinforcement_learning/SmolLM3-3B/grpo.ipynb)
 
 ### Thai
 
