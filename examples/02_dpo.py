@@ -39,7 +39,7 @@ model = AutoModelForCausalLM.from_pretrained(BASE, dtype=torch.bfloat16, device_
 
 # ── LARA (1/3): attach
 # Preference optimization is less demanding about placement than fine-tuning:
-# a single middle module reaches parity with six. `layers=1` resolves to [14]
+# a single middle adapter reaches parity with six. `layers=1` resolves to [14]
 # on a 28-layer model.
 lara = LARA(model, layers=1, rank=128, alpha=128)
 print(lara, f"\nbase frozen, {lara.num_trainable():,} trainable parameters")
@@ -61,9 +61,9 @@ ds = ds.map(to_pairs, remove_columns=ds.column_names)
 
 # The reference model is the frozen base. Rather than load a second copy of it,
 # precompute the reference log probabilities before training starts: at that
-# point the modules are still zero-initialized, so the model *is* the base.
+# point the adapters are still zero-initialized, so the model *is* the base.
 # (That holds when training a fresh behavior, as here. If you continue training
-# an existing one, the modules are no longer zero and this shortcut is wrong.)
+# an existing one, the adapters are no longer zero and this shortcut is wrong.)
 trainer = DPOTrainer(
     model=model,
     ref_model=None,
