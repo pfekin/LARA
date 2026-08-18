@@ -28,17 +28,17 @@ On a code fine-tuning task, LARA matches LoRA at equal parameter counts. The sam
 
 ## How it works
 
-At each of its layers, a module does this:
+At each of its layers, an adapter does this:
 
 ```python
 h = h + gamma * (alpha / rank) * up(down(layer_norm(h)))
 ```
 
-`down` projects to rank `r`, `up` projects back. `up` starts at zero, so an untrained module contributes nothing and the model is exactly the base. Nothing else is touched: with the modules removed the forward pass is identical, bit for bit.
+`down` projects to rank `r`, `up` projects back. `up` starts at zero, so an untrained adapter contributes nothing and the model is exactly the base. Nothing else is touched: with the adapters removed the forward pass is identical, bit for bit.
 
 At rank 128 over six layers of a 1.5B model that is about 2.4M trainable parameters, or 33 MB for seven behaviors.
 
-Because no weights are modified, behaviors compose. A small router reads the frozen hidden state and produces a per-token distribution over the behaviors in the bank, and their corrections are blended by weight.
+Because no weights are modified, behaviors compose. A small router reads the frozen hidden state and produces a per-token distribution over the behaviors in the bank, and their corrections are blended by weight. Behaviors compose rather than replace one another, and there is no limit to how many you install.
 
 ## Install
 
@@ -77,11 +77,11 @@ trainer.train()
 lara.save("behaviors/code", route_samples=prompts[:200])
 ```
 
-`layers=6` spreads six modules evenly over the depth. On a 28-layer model that resolves to `[4, 8, 12, 16, 20, 24]`. Pass a list instead for exact control.
+`layers=6` spreads six adapters evenly over the depth. On a 28-layer model that resolves to `[4, 8, 12, 16, 20, 24]`. Pass a list instead for exact control.
 
-LARA does not replace or wrap the trainer. It attaches the modules to the model and freezes everything else, so `model.parameters()` reaches the modules and any trainer picks them up: the HF `Trainer`, TRL's `DPOTrainer` or `GRPOTrainer`, or a loop you wrote yourself. The objective makes no difference to the artifact. A behavior trained with cross-entropy, with DPO, or with a policy gradient loads and routes exactly the same way.
+LARA does not replace or wrap the trainer. It attaches the adapters to the model and freezes everything else, so `model.parameters()` reaches the adapters and any trainer picks them up: the HF `Trainer`, TRL's `DPOTrainer` or `GRPOTrainer`, or a loop you wrote yourself. The objective makes no difference to the artifact. A behavior trained with cross-entropy, with DPO, or with a policy gradient loads and routes exactly the same way.
 
-Fine-tuning benefits from several insertion points. Preference optimization reaches the same quality with a single module in the middle of the network, and a policy gradient behaved the same way in testing, so `layers=1` is often enough for both.
+Fine-tuning benefits from several insertion points. Preference optimization reaches the same quality with a single adapter in the middle of the network, and a policy gradient behaved the same way in testing, so `layers=1` is often enough for both.
 
 ## Turn the adaptation up or down
 
@@ -184,14 +184,14 @@ A behavior records the base it was trained against and refuses to load onto a di
 
 ## API
 
-`LARA(model, layers=6, rank=128, alpha=128)` attaches modules to a frozen model. `layers` is a count or a list.
+`LARA(model, layers=6, rank=128, alpha=128)` attaches a behavior to a frozen model. `layers` is a count or a list.
 
 - `lara.gamma` scale applied at inference
 - `lara.num_trainable()` parameter count
 - `lara.save(path, route_samples=..., method=...)` write the behavior
 - `LARA.from_pretrained(model, path)` attach a saved behavior
 - `lara.disabled()` context manager that runs the frozen base
-- `lara.detach()` remove the modules and hooks
+- `lara.detach()` remove the adapters and hooks
 
 `Bank(model, tokenizer, top_k=None)` holds several behaviors over one frozen model.
 
