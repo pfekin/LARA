@@ -10,9 +10,9 @@ harness in research/, which uses its own loss with an NLL anchor term that TRL
 does not apply, and settings tuned for it. Run at these settings on 512 pairs,
 the training loss falls a long way while held out accuracy barely moves, which
 is what overfitting a small preference set looks like. Treat the numbers below
-as a check that the modules trained, not as a result.
+as a check that the adapters trained, not as a result.
 
-DPO needs a reference model. Because the modules are zero-initialized, an
+DPO needs a reference model. Because the adapters are zero-initialized, an
 untrained LARA model is exactly the base, so the reference log probabilities can
 be precomputed before the first step instead of loading a second copy of the
 model. See the comment on DPOConfig below for when that shortcut does not hold.
