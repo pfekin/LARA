@@ -21,7 +21,7 @@ tok = AutoTokenizer.from_pretrained(BASE)
 tok.pad_token = tok.pad_token or tok.eos_token
 model = AutoModelForCausalLM.from_pretrained(BASE, dtype=torch.bfloat16, device_map="auto")
 
-# ── LARA (1/3): attach modules to the frozen base
+# ── LARA (1/3): attach adapters to the frozen base
 # `layers=6` spreads six modules evenly over the depth. On a 28-layer model that
 # is [4, 8, 12, 16, 20, 24]. Pass a list if you want exact control.
 lara = LARA(model, layers=6, rank=128, alpha=128)
