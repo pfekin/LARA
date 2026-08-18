@@ -84,8 +84,8 @@ cells.append(md("""## 1. Train a behavior with cross-entropy
 
 The only LARA-specific lines are the three marked below. Everything else is
 ordinary Hugging Face training: LARA does not wrap, replace, or subclass the
-trainer. It attaches modules to the model and freezes everything else, so
-`model.parameters()` reaches the modules and any trainer picks them up."""))
+trainer. It attaches adapters to the model and freezes everything else, so
+`model.parameters()` reaches the adapters and any trainer picks them up."""))
 
 cells.append(code(body("01_finetune.py") + "\n" + CLEANUP))
 
@@ -97,7 +97,7 @@ route alongside any other behavior.
 
 This is not a reproduction of the paper. The paper's DPO numbers come from the
 harness in `research/`, which uses its own loss with an NLL anchor term that TRL
-does not apply. Read the numbers below as a check that the modules trained, not
+does not apply. Read the numbers below as a check that the adapters trained, not
 as a result."""))
 
 cells.append(code(body("02_dpo.py") + "\n" + CLEANUP))
