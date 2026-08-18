@@ -24,7 +24,7 @@ Lightweight Additive Residual Adaptation: residual-stream adapters for frozen LL
 
 LARA adapts a language model without writing to its weights. At a small set of layers it reads the hidden state, computes a low-rank correction, and adds it back to the residual stream. The base model is loaded once and stays frozen, so each adapted behavior is a separate file of a few megabytes, and several of them can sit on one model at the same time.
 
-At equal parameter counts, LARA matches LoRA on a code fine-tuning task and on preference optimization. What it adds is a scale you can turn at inference, and the ability to hold many behaviors resident on one base and pick between them per token.
+On a code fine-tuning task, LARA matches LoRA at equal parameter counts. The same is true for preference optimization (DPO) and reinforcement learning (GRPO), where LARA matched LoRA with sixteen times fewer parameters. What it adds is a scale you can turn at inference, and the ability to hold many behaviors resident on one base and pick between them per token.
 
 ## How it works
 
