@@ -17,7 +17,9 @@ Lightweight Additive Residual Adaptation: residual-stream adapters for frozen LL
   <img alt="LARA reads the hidden state between layers, computes a low-rank correction, and adds it back to the residual stream" src="media/LARA_readme_hero.png">
 </picture>
 
-[Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/b2d1e8b0-c25d-40fe-af77-64a3f2c6ae47)
+[Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5)
+
+
 
 
 LARA adapts a language model without writing to its weights. At a small set of layers it reads the hidden state, computes a low-rank correction, and adds it back to the residual stream. The base model is loaded once and stays frozen, so each adapted behavior is a separate file of a few megabytes, and several of them can sit on one model at the same time.
