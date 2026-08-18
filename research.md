@@ -87,15 +87,12 @@ At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, 
 
 ## Observations outside the benchmarks
 
-Everything above is measured. This section is not.
-
 ### Reinforcement learning
 A behaviour was trained with GRPO against a rule checker, with reward equal to the proportion of formatting constraints satisfied. On Qwen3-1.7B, a single rank-128 LARA module reached 28% of prompts with every constraint satisfied, compared with 29% for LoRA (rank 8 across seven target modules). LARA used 530k trainable parameters and 2.2 MB on disk, versus 8.7M parameters and 34.9 MB for LoRA. The base model reached 2%.
 
 LARA also exposes a runtime strength parameter. In this experiment, increasing the strength improved performance on the trained constraints up to 2.0, while the held-out constraints peaked at lower strength. This provides direct control over how strongly the learned behaviour is applied at inference time.
 
 Notebooks: [Qwen](https://github.com/pfekin/LARA/blob/main/examples/reinforcement_learning/Qwen3-1.7B/grpo.ipynb)
-[SmolLM](https://github.com/pfekin/LARA/blob/main/examples/reinforcement_learning/SmolLM3-3B/grpo.ipynb)
 
 ### Thai
 
