@@ -5,7 +5,7 @@ LARA adapts a frozen model by reading the hidden state at a small set of layers 
 
 
 
-At equal parameter counts, LARA matches LoRA on a code fine-tuning task and on preference optimization. Under GRPO against a rule checker it reached the same score as a LoRA with sixteen times the parameters, though at evaluation sizes too small to separate the two. Because each adapted behavior is a small module over a shared frozen base, many behaviors can be held resident at once and routed per token.
+At equal parameter counts, LARA matches LoRA on a code fine-tuning task and on preference optimization. Under GRPO against a rule checker it reached the same score as a LoRA with sixteen times the parameters, though at evaluation sizes too small to separate the two. Because each adapted behavior are small adapters over a shared frozen base, many behaviors can be held resident at once and routed per token.
 
 This repository contains the code for the experiments in the accompanying [preprint](https://doi.org/10.48550/arXiv.2607.28669).
 
@@ -17,7 +17,7 @@ This repository contains the code for the experiments in the accompanying [prepr
 
 Running a capable model on a phone, a laptop, or an edge device hits a wall made of memory. One fine-tuned model is already large, and most real products need more than one behavior: a coding helper, a summarizer, a medical assistant, each with its own tone or safety rules. Shipping a separate fine-tuned model for every behavior multiplies the footprint until it stops fitting on the device.
 
-LARA takes a different route by reusing weights. The base model is loaded once, frozen, and shared across every behavior. Each behavior is a thin module that reads the shared residual stream and adds a small correction, and a small router decides token by token which behavior to apply. Another behavior costs a few megabytes, not another copy of the model. Seven behaviors fit on one 3 GB base for about 33 MB of adapters, against roughly 21 GB for seven separate models.
+LARA takes a different route by reusing weights. The base model is loaded once, frozen, and shared across every behavior. Each behavior is a thin adapter that reads the shared residual stream and adds a small correction, and a small router decides token by token which behavior to apply. Another behavior costs a few megabytes, not another copy of the model. Seven behaviors fit on one 3 GB base for about 33 MB of adapters, against roughly 21 GB for seven separate models.
 
 Because the router works per token, behaviors are not a switch the user flips. The device blends them on the fly: a coding answer written in your product's voice, a medical reply that follows your safety rules, a summary in a house style. A fine-tuned skill and a preference-tuned behavior live on the same frozen base and can apply together on the same token.
 
@@ -27,7 +27,7 @@ Picture an assistant that runs entirely on the device, offline and private, with
 
 ### A different angle on mixture-of-experts
 
-Mixture-of-experts models showed that routing each token to a few specialized modules works well. LARA borrows the routing idea and aims it at a different problem. An MoE routes among experts inside one large model to add capacity, mostly in the datacenter. LARA routes among lightweight adapters over one small frozen base to make many behaviors cheaply available at the edge. Its experts are megabyte-scale corrections that share the same frozen weights, so one more behavior stays cheap and the base is never duplicated. This does not make a model larger or more capable. It makes one small model wear many hats, on hardware where a stack of full models or a large MoE would never fit.
+Mixture-of-experts models showed that routing each token to a few specialized adapters works well. LARA borrows the routing idea and aims it at a different problem. An MoE routes among experts inside one large model to add capacity, mostly in the datacenter. LARA routes among lightweight adapters over one small frozen base to make many behaviors cheaply available at the edge. Its experts are megabyte-scale corrections that share the same frozen weights, so one more behavior stays cheap and the base is never duplicated. This does not make a model larger or more capable. It makes one small model wear many hats, on hardware where a stack of full models or a large MoE would never fit.
 
 ## Contents
 
@@ -68,7 +68,7 @@ Main fields in `benchmark.py`:
 
 - `task`: `"ft"` or `"dpo"`
 - `arms`: methods to run, `["rc", "lora"]` (the `rc` arm is LARA)
-- `bridge_layers`: the layers at which LARA inserts modules
+- `bridge_layers`: the layers at which LARA inserts adapters
 - `rank`, `alpha`: LARA rank and scale
 - `lora_rank`, `lora_target`: the LoRA baseline, set to match LARA's parameter count
 
@@ -88,7 +88,7 @@ At a matched budget of roughly 2.4M trainable parameters against 2.2M for LoRA, 
 ## Observations outside the benchmarks
 
 ### Reinforcement learning
-A behaviour was trained with GRPO against a rule checker, with reward equal to the proportion of formatting constraints satisfied. On Qwen3-1.7B, a single rank-128 LARA module reached 28% of prompts with every constraint satisfied, compared with 29% for LoRA (rank 8 across seven target modules). LARA used 530k trainable parameters and 2.2 MB on disk, versus 8.7M parameters and 34.9 MB for LoRA. The base model reached 2%.
+A behaviour was trained with GRPO against a rule checker, with reward equal to the proportion of formatting constraints satisfied. On Qwen3-1.7B, a single rank-128 LARA adapter reached 28% of prompts with every constraint satisfied, compared with 29% for LoRA (rank 8 across seven target modules). LARA used 530k trainable parameters and 2.2 MB on disk, versus 8.7M parameters and 34.9 MB for LoRA. The base model reached 2%.
 
 LARA also exposes a runtime strength parameter. In this experiment, increasing the strength improved performance on the trained constraints up to 2.0, while the held-out constraints peaked at lower strength. This provides direct control over how strongly the learned behaviour is applied at inference time.
 
