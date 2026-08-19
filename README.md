@@ -4,7 +4,7 @@ Lightweight Additive Residual Adaptation: residual-stream adapters for frozen LL
 
 <div align="left">    
     
-[![arXiv](https://img.shields.io/badge/arXiv-2501.12345-b31b1b.svg)](https://doi.org/10.48550/arXiv.2607.28669)
+[![arXiv](https://img.shields.io/badge/arXiv-2607.28669-v1.svg)](https://doi.org/10.48550/arXiv.2607.28669)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/examples/quickstart.ipynb)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/)
