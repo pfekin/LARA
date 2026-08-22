@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Storage check</title>
+<style>
+  body { font:14px/1.6 ui-monospace,Menlo,Consolas,monospace; background:#131312;
+         color:#e8e6e1; padding:24px; max-width:720px; margin:0 auto; }
+  h1 { font-size:13px; letter-spacing:.2em; text-transform:uppercase; font-weight:500; }
+  pre { background:#1a1a18; border:1px solid #2a2a28; padding:14px; white-space:pre-wrap; }
+  .ok { color:#c8e64a; } .bad { color:#e6674a; }
+  button { background:#c8e64a; color:#141410; border:none; font:inherit;
+           padding:8px 16px; cursor:pointer; margin-right:8px; }
+</style>
+</head>
+<body>
+<h1>Browser storage check</h1>
+<p>Answers one question: can this browser keep a large file between reloads?
+   Writes 400 MB, reads it back, and survives a reload.</p>
+<button id="go">Run test</button>
+<button id="wipe">Delete test file</button>
+<pre id="log"></pre>
+
+<script type="module">
+const log = document.getElementById("log");
+const put = (t, cls = "") =>
+  log.innerHTML += cls ? `<span class="${cls}">${t}</span>\n` : t + "\n";
+
+const NAME = "storage_probe.bin";
+const MB = 400;
+
+async function dir() {
+  if (!navigator.storage?.getDirectory) return null;
+  try { return await navigator.storage.getDirectory(); } catch (e) {
+    put(`getDirectory threw: ${e.name} ${e.message}`, "bad"); return null;
+  }
+}
+
+async function existing() {
+  const d = await dir();
+  if (!d) return null;
+  try {
+    const f = await (await d.getFileHandle(NAME)).getFile();
+    return f.size;
+  } catch { return null; }
+}
+
+async function run() {
+  log.textContent = "";
+  put(`secure context      : ${window.isSecureContext}`);
+  put(`origin              : ${location.origin}`);
+  put(`userAgent           : ${navigator.userAgent.slice(0, 90)}`);
+
+  try {
+    const p = await navigator.storage.persisted();
+    put(`persisted already   : ${p}`);
+    if (!p) put(`persist() granted   : ${await navigator.storage.persist()}`);
+  } catch (e) { put(`persist unsupported : ${e.name}`, "bad"); }
+
+  try {
+    const { quota = 0, usage = 0 } = await navigator.storage.estimate();
+    put(`quota               : ${(quota / 1e9).toFixed(2)} GB`);
+    put(`already used        : ${(usage / 1e9).toFixed(2)} GB`);
+    put(`free for this origin: ${((quota - usage) / 1e9).toFixed(2)} GB`);
+  } catch (e) { put(`estimate failed     : ${e.name}`, "bad"); }
+
+  const d = await dir();
+  put(`OPFS available      : ${!!d}`, d ? "ok" : "bad");
+  if (!d) { put("\nOPFS is unavailable — weights cannot persist here.", "bad"); return; }
+
+  const prior = await existing();
+  if (prior !== null) {
+    put(`\nfile from a previous run: ${(prior / 1e6).toFixed(0)} MB`, "ok");
+    put("Storage survives reloads in this browser.", "ok");
+    put("If the model still re-downloads, the problem is in index.html, not the browser.");
+    return;
+  }
+
+  let fh;
+  try { fh = await d.getFileHandle(NAME, { create: true }); }
+  catch (e) { put(`getFileHandle failed: ${e.name} ${e.message}`, "bad"); return; }
+
+  put(`createWritable      : ${!!fh.createWritable}`, fh.createWritable ? "ok" : "bad");
+  if (!fh.createWritable) {
+    put("\nNo write stream (Safari outside a worker). Falls back to Cache API,", "bad");
+    put("which needs the whole file in memory and fails at gigabyte sizes.", "bad");
+    return;
+  }
+
+  put(`\nwriting ${MB} MB in 4 MB chunks…`);
+  const chunk = new Uint8Array(4 * 1024 * 1024);
+  const t0 = performance.now();
+  try {
+    const w = await fh.createWritable();
+    for (let i = 0; i < MB / 4; i++) await w.write(chunk);
+    await w.close();
+  } catch (e) {
+    put(`write failed at some point: ${e.name} ${e.message}`, "bad");
+    put("That is the quota or an eviction policy.", "bad");
+    return;
+  }
+  const secs = ((performance.now() - t0) / 1000).toFixed(1);
+
+  const size = await existing();
+  put(`wrote and read back : ${(size / 1e6).toFixed(0)} MB in ${secs}s`,
+      size >= MB * 1e6 * 0.99 ? "ok" : "bad");
+  put("\nNow RELOAD this page and press Run test again.");
+  put("If it reports the file from a previous run, storage works here.");
+}
+
+document.getElementById("go").onclick = () => run().catch(e => put(String(e), "bad"));
+document.getElementById("wipe").onclick = async () => {
+  const d = await dir();
+  if (d) { try { await d.removeEntry(NAME); put("deleted", "ok"); }
+           catch (e) { put(`delete failed: ${e.name}`, "bad"); } }
+};
+run();
+</script>
+</body>
+</html>
