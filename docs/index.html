@@ -63,6 +63,8 @@
     font-size:12px; letter-spacing:.1em; text-transform:uppercase;
     padding:9px 20px; cursor:pointer; }
   .go button:disabled { background:var(--off); color:var(--dim); cursor:default; }
+  .go button.ghost { background:none; color:var(--dim); border:1px solid var(--line); }
+  .go button.ghost:hover { color:var(--ink); border-color:var(--dim); }
   .stat { color:var(--dim); font-size:11px; }
 
   pre { white-space:pre-wrap; word-wrap:break-word; border:1px solid var(--line);
@@ -91,6 +93,7 @@
   <textarea id="prompt">Write a Python function that reverses a string.</textarea>
   <div class="go">
     <button id="run" disabled>Generate</button>
+    <button id="stop" class="ghost" hidden>Stop</button>
     <span class="stat" id="stat"></span>
   </div>
   <pre id="out"></pre>
@@ -128,6 +131,7 @@ if (ON_HUB) {
 }
 
 let sess, tok, meta, coeff, inputNames, hasPast, pastNames = [];
+let stopping = false;
 
 function strips() {
   $("desk").innerHTML = "";
@@ -319,7 +323,9 @@ function emptyKV() {
 }
 
 async function generate() {
+  stopping = false;
   $("run").disabled = true;
+  $("stop").hidden = false;
   const out = $("out");
   out.textContent = "";
   out.classList.add("caret");
@@ -348,6 +354,7 @@ async function generate() {
   const t0 = performance.now();
 
   for (let n = 0; n < MAX_NEW; n++) {
+    if (stopping) break;
     const feed = {
       input_ids: new ort.Tensor("int64", BigInt64Array.from(step, BigInt), [1, step.length]),
       attention_mask: new ort.Tensor("int64",
@@ -382,19 +389,29 @@ async function generate() {
       step = ids;                       // no cache: re-read the whole sequence
       total = 0;
     }
-    if (n % 4 === 0) await new Promise(r => setTimeout(r, 0));   // let the UI breathe
+    await new Promise(r => setTimeout(r, 0));   // let clicks land between tokens
   }
 
   out.classList.remove("caret");
   const secs = (performance.now() - t0) / 1000;
-  $("stat").textContent = `${(ids.length - promptLen)} tokens · ${((ids.length - promptLen) / secs).toFixed(1)} tok/s`;
+  const made = ids.length - promptLen;
+  $("stat").textContent = `${made} tokens · ${(made / secs).toFixed(1)} tok/s`
+                        + (stopping ? " · stopped" : "");
+  $("stop").hidden = true;
   $("run").disabled = false;
 }
 
 $("run").onclick = () => generate().catch(e => {
+  console.error(e);
   $("out").textContent = "Generation failed: " + e.message;
+  $("out").classList.remove("caret");
+  $("stop").hidden = true;
   $("run").disabled = false;
 });
+// The loop yields to the event queue every few tokens, so the click lands
+// between forward passes rather than interrupting one.
+$("stop").onclick = () => { stopping = true; $("stop").disabled = true;
+                            setTimeout(() => { $("stop").disabled = false; }, 600); };
 $("allOn").onclick = () => setAll(1);
 $("allOff").onclick = () => setAll(0);
 $("clear").onclick = () => clearCache();
