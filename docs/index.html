@@ -181,18 +181,39 @@ const store = {
   },
 
   async read(url) {
+    const k = this.key(url);
     const d = await this.dir();
     if (d) {
+      let f = null;
       try {
-        const fh = await d.getFileHandle(this.key(url));
-        const f = await fh.getFile();
-        if (f.size > 0) return await f.arrayBuffer();
-      } catch { /* not stored yet */ }
+        f = await (await d.getFileHandle(k)).getFile();
+      } catch (e) {
+        console.log(`[store] ${k}: not on disk yet (${e.name})`);
+      }
+      if (f) {
+        console.log(`[store] ${k}: found ${(f.size / 1e6).toFixed(0)} MB`);
+        if (f.size === 0) {
+          console.warn(`[store] ${k}: zero bytes, discarding`);
+          try { await d.removeEntry(k); } catch {}
+        } else {
+          try {
+            // Never swallow this. Materialising a multi-GB file can fail with
+            // RangeError (ArrayBuffer ceiling) or OOM, and a silent catch here
+            // looks exactly like "nothing was cached".
+            return await f.arrayBuffer();
+          } catch (e) {
+            console.error(`[store] ${k}: read back FAILED — ${e.name}: ${e.message}`);
+            say(`Stored weights could not be read back (${e.name}). Re-downloading.`);
+          }
+        }
+      }
+    } else {
+      console.warn("[store] OPFS unavailable");
     }
     try {
       const hit = await (await caches.open(CACHE)).match(url);
-      if (hit) return await hit.arrayBuffer();
-    } catch { /* no cache api */ }
+      if (hit) { console.log(`[store] ${k}: served from Cache API`); return await hit.arrayBuffer(); }
+    } catch (e) { console.log("[store] cache api miss:", e.name); }
     return null;
   },
 
@@ -211,7 +232,8 @@ const store = {
                              try { await d.removeEntry(this.key(url)); } catch {} },
       };
     } catch (e) {
-      console.warn("opfs unavailable:", e.name, e.message);
+      console.warn(`[store] cannot open a writer for ${this.key(url)}:`,
+                   e.name, e.message);
       return null;
     }
   },
@@ -259,8 +281,15 @@ async function fetchProgress(url, label, from, to) {
         say(`Fetching ${label}: ${mb} MB`);
       }
     }
-    if (sink) { await sink.close(); console.log(`stored ${label} (${(got/1e6).toFixed(0)} MB)`); }
+    if (sink) {
+      await sink.close();
+      const back = await (await (await store.dir())
+        .getFileHandle(store.key(url))).getFile().catch(() => null);
+      console.log(`[store] wrote ${label}: ${(got / 1e6).toFixed(0)} MB, `
+                + `on disk afterwards: ${back ? (back.size / 1e6).toFixed(0) + " MB" : "MISSING"}`);
+    }
   } catch (e) {
+    console.error(`[store] download/write of ${label} failed:`, e.name, e.message);
     if (sink) await sink.abort();
     throw e;
   }
