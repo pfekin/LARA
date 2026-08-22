@@ -168,21 +168,69 @@ const setAll = v => [...$("desk").children].forEach(r => r.__set && r.__set(v));
 const CACHE = "lara-weights-v1";
 let cachedAny = false;
 
-async function fetchProgress(url, label, from, to) {
-  // Multi-gigabyte weights should be fetched once, ever. The Cache API survives
-  // reloads and hard-refreshes alike, unlike the plain HTTP cache.
-  let store = null;
-  try {
-    store = await caches.open(CACHE);
-    const hit = await store.match(url);
-    if (hit) {
-      say(`Reading ${label} from cache…`);
-      bar(to);
-      cachedAny = true;
-      return await hit.arrayBuffer();
+// Storage for gigabyte weights. OPFS is the right tool: it takes a write stream,
+// so chunks go to disk as they arrive and the whole file is never held twice in
+// memory -- which is what makes the Cache API fail at this size. Safari lacks
+// createWritable outside workers, so the Cache API stays as a fallback.
+const store = {
+  key: u => "lara_" + u.split("/").pop(),
+
+  async dir() {
+    if (!navigator.storage?.getDirectory) return null;
+    try { return await navigator.storage.getDirectory(); } catch { return null; }
+  },
+
+  async read(url) {
+    const d = await this.dir();
+    if (d) {
+      try {
+        const fh = await d.getFileHandle(this.key(url));
+        const f = await fh.getFile();
+        if (f.size > 0) return await f.arrayBuffer();
+      } catch { /* not stored yet */ }
     }
-  } catch (e) {
-    console.warn("cache unavailable:", e.message);
+    try {
+      const hit = await (await caches.open(CACHE)).match(url);
+      if (hit) return await hit.arrayBuffer();
+    } catch { /* no cache api */ }
+    return null;
+  },
+
+  // returns a sink that accepts chunks, or null if nothing can store them
+  async writer(url) {
+    const d = await this.dir();
+    if (!d) return null;
+    try {
+      const fh = await d.getFileHandle(this.key(url), { create: true });
+      if (!fh.createWritable) return null;
+      const w = await fh.createWritable();
+      return {
+        write: c => w.write(c),
+        close: () => w.close(),
+        abort: async () => { try { await w.abort(); } catch {}
+                             try { await d.removeEntry(this.key(url)); } catch {} },
+      };
+    } catch (e) {
+      console.warn("opfs unavailable:", e.name, e.message);
+      return null;
+    }
+  },
+
+  async clear() {
+    const d = await this.dir();
+    if (d) for await (const n of d.keys())
+      if (n.startsWith("lara_")) { try { await d.removeEntry(n); } catch {} }
+    try { await caches.delete(CACHE); } catch {}
+  },
+};
+
+async function fetchProgress(url, label, from, to) {
+  const cached = await store.read(url);
+  if (cached) {
+    say(`Reading ${label} from storage…`);
+    bar(to);
+    cachedAny = true;
+    return cached;
   }
 
   const r = await fetch(url);
@@ -192,49 +240,44 @@ async function fetchProgress(url, label, from, to) {
       : `${label}: HTTP ${r.status} for ${url}`);
   }
   const total = +(r.headers.get("content-length") || 0);
+  const sink = await store.writer(url);
   const chunks = [];
   let got = 0;
   const reader = r.body.getReader();
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    got += value.length;
-    const mb = (got / 1e6).toFixed(0);
-    if (total) {
-      say(`Fetching ${label}: ${mb} / ${(total / 1e6).toFixed(0)} MB`);
-      bar(from + (to - from) * (got / total));
-    } else {
-      say(`Fetching ${label}: ${mb} MB`);
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      if (sink) await sink.write(value);          // straight to disk, no second copy
+      got += value.length;
+      const mb = (got / 1e6).toFixed(0);
+      if (total) {
+        say(`Fetching ${label}: ${mb} / ${(total / 1e6).toFixed(0)} MB`);
+        bar(from + (to - from) * (got / total));
+      } else {
+        say(`Fetching ${label}: ${mb} MB`);
+      }
     }
+    if (sink) { await sink.close(); console.log(`stored ${label} (${(got/1e6).toFixed(0)} MB)`); }
+  } catch (e) {
+    if (sink) await sink.abort();
+    throw e;
   }
+
   const buf = new Uint8Array(got);
   let off = 0;
   for (const c of chunks) { buf.set(c, off); off += c.length; }
-
-  if (store) {
-    try {
-      say(`Caching ${label}…`);
-      // no .slice(): copying 1.8 GB to store it doubles peak memory and is
-      // enough on its own to make the write fail
-      await store.put(url, new Response(buf, {
-        headers: { "content-type": "application/octet-stream" },
-      }));
-      const after = await store.match(url);
-      console.log(`cached ${label}:`, !!after);
-      if (!after) console.warn(`${label} did not persist — quota?`);
-    } catch (e) {
-      console.warn(`could not cache ${label} (${(got / 1e6).toFixed(0)} MB):`,
-                   e.name, e.message);
-      say(`Could not cache ${label} — it will download again next time.`);
-    }
+  if (!sink) {
+    say(`${label} could not be stored — it will download again next visit.`);
+    console.warn("no persistent storage available for", label);
   }
   return buf.buffer;
 }
 
 async function clearCache() {
-  await caches.delete(CACHE);
-  say("Cached weights cleared. Reload to fetch them again.");
+  await store.clear();
+  say("Stored weights cleared. Reload to fetch them again.");
 }
 
 async function reportQuota() {
@@ -247,6 +290,11 @@ async function reportQuota() {
 }
 
 async function boot() {
+  try {
+    if (navigator.storage?.persist && !(await navigator.storage.persisted())) {
+      console.log("persistent storage granted:", await navigator.storage.persist());
+    }
+  } catch { /* not supported */ }
   const free = await reportQuota();
   if (free !== null && free < 2.5e9) {
     say(`Only ${(free / 1e9).toFixed(1)} GB of browser storage free — the `
