@@ -309,6 +309,26 @@ async function clearCache() {
   say("Stored weights cleared. Reload to fetch them again.");
 }
 
+async function probeWebGPU() {
+  if (!navigator.gpu) {
+    return { ok: false, why: "navigator.gpu is undefined — no WebGPU in this browser" };
+  }
+  let ad;
+  try { ad = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" }); }
+  catch (e) { return { ok: false, why: `requestAdapter threw: ${e.name} ${e.message}` }; }
+  if (!ad) return { ok: false, why: "requestAdapter returned null — no usable GPU" };
+
+  const L = ad.limits;
+  const info = ad.info || {};
+  console.log("[gpu] vendor:", info.vendor, "arch:", info.architecture,
+              "desc:", info.description);
+  console.log("[gpu] maxBufferSize:",
+              (L.maxBufferSize / 1e6).toFixed(0), "MB");
+  console.log("[gpu] maxStorageBufferBindingSize:",
+              (L.maxStorageBufferBindingSize / 1e6).toFixed(0), "MB");
+  return { ok: true, adapter: ad, limits: L, info };
+}
+
 async function reportQuota() {
   try {
     const { quota = 0, usage = 0 } = await navigator.storage.estimate();
@@ -324,6 +344,8 @@ async function boot() {
       console.log("persistent storage granted:", await navigator.storage.persist());
     }
   } catch { /* not supported */ }
+  const gpu = await probeWebGPU();
+  if (!gpu.ok) console.warn("[gpu]", gpu.why);
   const free = await reportQuota();
   if (free !== null && free < 2.5e9) {
     say(`Only ${(free / 1e9).toFixed(1)} GB of browser storage free — the `
@@ -363,13 +385,32 @@ async function boot() {
 
   say("Compiling — this takes a moment.");
   bar(1);
+
   let ep = "webgpu";
-  try {
-    sess = await ort.InferenceSession.create(new Uint8Array(graph),
-      { ...opts, executionProviders: ["webgpu"] });
-  } catch (e) {
-    console.warn("webgpu failed, falling back to wasm:", e.message);
+  let gpuErr = null;
+  if (!gpu.ok) {
+    gpuErr = gpu.why;
+  } else {
+    try {
+      sess = await ort.InferenceSession.create(new Uint8Array(graph),
+        { ...opts, executionProviders: ["webgpu"], graphOptimizationLevel: "all" });
+    } catch (e) {
+      gpuErr = `${e.name}: ${e.message}`;
+      console.error("[gpu] session creation failed:", e);
+    }
+  }
+
+  if (gpuErr) {
+    // WASM runs this model at a fraction of a token per second. Falling back
+    // silently just looks like the page is broken, so make it a choice.
     ep = "wasm";
+    say(`WebGPU unavailable — ${gpuErr}`);
+    console.warn("[gpu] falling back to wasm, which will be extremely slow");
+    if (!confirm(`WebGPU could not start:\n\n${gpuErr}\n\n`
+               + `WASM will work but runs at well under 1 token/second.\n`
+               + `Continue anyway?`)) {
+      throw new Error(`WebGPU unavailable: ${gpuErr}`);
+    }
     sess = await ort.InferenceSession.create(new Uint8Array(graph),
       { ...opts, executionProviders: ["wasm"] });
   }
@@ -385,6 +426,10 @@ async function boot() {
   bar(-1);
   say("");
   $("run").disabled = false;
+  if (gpu.ok) {
+    const mb = (gpu.limits.maxBufferSize / 1e6).toFixed(0);
+    console.log(`[gpu] session created on webgpu; largest allowed buffer ${mb} MB`);
+  }
   $("foot").textContent =
     `${ep} · ${meta.behaviors.length} behaviors · layers [${meta.layers}] · `
     + `route ${meta.route_layer} · weights ${cachedAny ? "from cache" : "downloaded"}`;
