@@ -251,7 +251,7 @@ With all behaviors disabled, the 1.7B model answered:
 
 ```text
 A common over-the-counter (OTC) pain reliever that reduces and does not
-significantly increase bleeding risk is ibuprofen...
+significantly increase bleeding risk is ibuprofen.
 ```
 
 With the medical behavior enabled, the same model answered:
