@@ -146,7 +146,53 @@ The benefit grows with the number of adaptations because the base is shared.
 
 More importantly, the seven behaviors are not necessarily seven mutually exclusive model choices. The router can combine them at inference time.
 
-## 7. Modular cognition
+## 7. Small models, context and learned behavior
+
+Local AI changes the constraints around customization. A small language model running on a phone or PC has less room for long system prompts, extended conversation histories and large RAG contexts than a frontier model running in the cloud. RAG remains useful when a system needs external or current information, but prompting can also become a significant part of the machinery used to make a small model behave in a particular way.
+
+LARA provides another route. A behavior can be learned once and represented as a small residual-stream correction rather than described again in a long prompt at every interaction. This makes behavior and knowledge separate concerns: RAG can supply information, while a learned behavior can change how the model uses that information.
+
+This matters for customization and personalization. A local model could carry behaviors for a particular domain, application, user or organization without requiring all of those preferences to consume context on every request.
+
+## 8. Small model, specialized behavior
+
+An informal medical test illustrates why a small local model plus a learned behavior can be interesting. The base was **Qwen3-1.7B**, a 1.7-billion-parameter dense language model.
+
+The prompt was:
+
+> Name a common over-the-counter pain reliever that reduces fever but does NOT increase bleeding risk.
+
+The distinction is deliberate. Acetaminophen and ibuprofen both reduce pain and fever, but ibuprofen is an NSAID and carries a bleeding warning, whereas acetaminophen is not an NSAID. The intended answer was **acetaminophen (Tylenol)**.
+
+With all behaviors disabled, the model produced:
+
+```text
+A common over-the-counter (OTC) pain reliever that reduces and does
+not significantly increase bleeding risk is ibuprofen...
+```
+
+With the medical behavior enabled, the same 1.7B model produced:
+
+```text
+Acetaminophen (Tylenol) is a common over-the-counter pain reliever
+that reduces fever but does NOT increase bleeding risk.
+```
+
+In this test, the adapted 1.7B model gave the same answer as a larger model used as a comparison. The result should not be read as evidence that LARA makes a 1.7B model generally equivalent to a larger model. It demonstrates a more specific property: a small domain behavior can change which of several plausible answers the model selects on a domain-specific question.
+
+The base model already contains general language and world knowledge. The behavior changes how that capability is expressed in a particular domain. That is the relevant proposition for small local models:
+
+```text
+small general model
+        +
+learned behavior
+        ↓
+specialized local model
+```
+
+The same idea can apply to problem solving, coding, tutoring, writing style and other forms of specialization.
+
+## 9. Modular cognition
 
 A mixture of behaviors suggests a different interpretation of post-training.
 
@@ -170,7 +216,7 @@ This resembles modular cognition more than conventional fine-tuning because the 
 
 The comparison with mixture-of-experts is useful but limited. MoE routes among experts that are part of one model. MoBs route among lightweight adaptations over one shared base, with the purpose of modular post-training rather than increasing the base model's parameter capacity.
 
-## 8. Local and edge AI
+## 10. Local and edge AI
 
 The same modularity has a practical consequence for local inference.
 
@@ -194,7 +240,7 @@ An offline tutor is one example. A phone could use a local vision pipeline to re
 
 Local AI is therefore an important application of the architecture, but the architecture also applies to conventional server inference.
 
-## 9. A possible software architecture for model behavior
+## 11. A possible software architecture for model behavior
 
 The repository suggests treating learned behaviors as deployable components:
 
@@ -222,7 +268,7 @@ That makes a behavior closer to a software component than to another model check
 
 It also suggests a possible distribution model in which the base model becomes the platform and behaviors become small installable modules.
 
-## 10. Experimental limits
+## 12. Experimental limits
 
 The reported experiments establish several properties of the current implementation:
 
@@ -233,7 +279,7 @@ The reported experiments establish several properties of the current implementat
 
 Other ideas remain broader hypotheses. In particular, robust claims about large behavior banks, extensive composition, cross-objective transfer, or the quality of arbitrary routing strategies require larger controlled experiments.
 
-## 11. Current research direction
+## 13. Current research direction
 
 The central research question is whether post-training can become modular.
 
@@ -345,6 +391,12 @@ Thai is already partly represented in the base, so the correction has something 
       archivePrefix={arXiv},
       primaryClass={cs.LG},
       url={https://arxiv.org/abs/2607.28669},
+}
+@software{ekin2026lara,
+  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs. Runs many behaviors per token.},
+  author  = {Pascal Ekin},
+  year    = {2026},
+  url     = {https://github.com/pfekin/LARA}
 }
 ```
 
