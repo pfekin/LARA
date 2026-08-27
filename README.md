@@ -63,6 +63,11 @@ The same behavior can therefore be applied with different strengths at inference
 
 A **behavior** is one learned adaptation. A **MoB** is the bank of behaviors together with the runtime mechanism that selects or combines them.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="media/figure2_mobs_dark.svg">
+  <img alt="One frozen base with a bank of behaviors. Corrections are added to the residual stream between layers; a small router weights them per token." src="media/figure2_mobs.svg">
+</picture>
+
 For example:
 
 ```text
@@ -97,8 +102,8 @@ polite     0.40
 ```
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_routing_dark.png">
-  <img alt="Routing weight across a sentence: the mix shifts from finance to code to summarizing as the text is generated" src="media/LARA_readme_routing.png">
+  <source media="(prefers-color-scheme: dark)" srcset="media/figure3_per_token_routing_dark.gif">
+  <img alt="Routing weights shifting across one sentence." src="media/figure3_per_token_routing.gif">
 </picture>
 
 `top_k` controls how many behaviors can contribute:
