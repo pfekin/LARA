@@ -110,6 +110,11 @@ one base model
 
 Each item is an independent behavior artifact. The MoB is the collection and runtime mixture; a single behavior is not itself a MoB.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="media/figure2_mobs_dark.svg">
+  <img alt="One frozen base with a bank of behaviors. Corrections are added to the residual stream between layers; a router weights them per token." src="media/figure2_mobs.svg">
+</picture>
+
 Load several behaviors:
 
 ```python
