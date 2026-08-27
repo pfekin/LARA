@@ -140,7 +140,7 @@ bank.top_k = 1       # hard selection
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_routing_dark.png">
-  <img alt="Routing weight across a sentence: the mix shifts from finance to code to summarizing as the text is generated" src="media/LARA_readme_routing.png">
+  <img alt="Routing weight across a sentence: the mix shifts from one behavior to an other as the text is generated" src="media/figure3_per_token_routing.gif">
 </picture>
 
 Soft routing allows overlapping behaviors to contribute together. Hard routing selects one behavior per token.
@@ -230,6 +230,50 @@ The same architecture can be used wherever one model needs several modes of oper
 A local AI tutor could combine mathematics, tutoring and a student's preferred explanation style. A coding assistant could combine language-specific coding, debugging, testing and security-review behaviors. An enterprise model could share one base model across departments while keeping separate legal, finance, support and engineering adaptations. A personal AI could maintain a small bank of writing, task and preference behaviors.
 
 These applications do not depend on local inference. The modularity also applies to server-side systems.
+
+## Why this matters for small local models
+
+Local AI changes the constraints around customization. A small language model running on a phone or PC has less room for long system prompts, extended conversation histories and large RAG contexts than a frontier model running in the cloud. Those techniques remain useful, but they can become an expensive way of telling a small model how it should behave.
+
+LARA provides another way to express customization: learn the behavior once and keep it in a small residual-stream adaptation rather than spelling it out in a long prompt at every interaction. This is useful for both application-specific behavior and personalization. A model can acquire a user's preferred writing style, a tutor's teaching method, a company's house style, or a domain-specific way of reasoning without requiring all of that information to be reconstructed from the context window each time.
+
+This does not replace RAG. RAG provides information the model does not have, while a behavior changes how the model uses the information it already has. The two can be complementary. The point is that behavior does not have to consume context.
+
+## Small model, specialized behavior
+
+A small base model can also become substantially more useful through domain adaptation. An informal test with **Qwen3-1.7B** illustrates the idea. The question was:
+
+> Name a common over-the-counter pain reliever that reduces fever but does NOT increase bleeding risk.
+
+The question is deliberately discriminative. Acetaminophen and ibuprofen both reduce pain and fever, but ibuprofen is an NSAID and carries a bleeding warning, whereas acetaminophen is not an NSAID. The intended answer was therefore **acetaminophen (Tylenol)**.
+
+With all behaviors disabled, the 1.7B model answered:
+
+```text
+A common over-the-counter (OTC) pain reliever that reduces and does not
+significantly increase bleeding risk is ibuprofen...
+```
+
+With the medical behavior enabled, the same model answered:
+
+```text
+Acetaminophen (Tylenol) is a common over-the-counter pain reliever that
+reduces fever but does NOT increase bleeding risk.
+```
+
+In this test, the adapted 1.7B model gave the same answer as a larger model used as a comparison. This is one example, not evidence that a 1.7B model generally performs like a larger model. It demonstrates the narrower point that a lightweight learned behavior can change the model's decision on a domain-specific distinction without changing the base model.
+
+That suggests a useful local-AI pattern:
+
+```text
+small general model
+        +
+learned behavior
+        ↓
+specialized local model
+```
+
+The same pattern can apply to problem solving, coding, tutoring, writing style and other kinds of specialization.
 
 ## Local and edge AI
 
