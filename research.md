@@ -168,7 +168,7 @@ With all behaviors disabled, the model produced:
 
 ```text
 A common over-the-counter (OTC) pain reliever that reduces and does
-not significantly increase bleeding risk is ibuprofen...
+not significantly increase bleeding risk is ibuprofen.
 ```
 
 With the medical behavior enabled, the same 1.7B model produced:
