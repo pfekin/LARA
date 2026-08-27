@@ -144,8 +144,8 @@ bank.top_k = 1       # hard selection
 ```
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_routing_dark.png">
-  <img alt="Routing weight across a sentence: the mix shifts from one behavior to an other as the text is generated" src="media/figure3_per_token_routing.gif">
+  <source media="(prefers-color-scheme: dark)" srcset="media/figure3_per_token_routing.gif>
+  <img alt="Routing weight across a sentence: the mix shifts from one behavior to another as the text is generated" src="media/figure3_per_token_routing.gif">
 </picture>
 
 Soft routing allows overlapping behaviors to contribute together. Hard routing selects one behavior per token.
