@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 660" width="900" height="660"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5b6470"/>
+    </marker>
+    <marker id="arrowStream" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8892a0"/>
+    </marker>
+    <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2f6f4f"/>
+    </marker>
+    <marker id="arrowPolite" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7d5aa0"/>
+    </marker>
+  </defs>
+
+  <rect width="900" height="660" fill="#ffffff"/>
+
+  <text x="450" y="38" text-anchor="middle" font-size="21" fill="#1b1f24">
+    MoBs: many behaviors on one frozen base
+  </text>
+  <text x="450" y="62" text-anchor="middle" font-size="13" fill="#8892a0">
+    corrections are added to the residual stream between layers, not to the layers
+  </text>
+
+  <!-- ══════════════ frozen base ══════════════ -->
+  <text x="712" y="100" text-anchor="middle" font-size="13" fill="#6b7280">frozen base</text>
+  <text x="712" y="118" text-anchor="middle" font-size="12" fill="#9aa2ad">3.4 GB, loaded once</text>
+
+  <rect x="600" y="128" width="224" height="460" rx="8"
+        fill="#f6f7f9" stroke="#dfe3e8" stroke-width="1.5"/>
+
+  <line x1="712" y1="574" x2="712" y2="136" stroke="#8892a0" stroke-width="3"
+        marker-end="url(#arrowStream)"/>
+  <text x="614" y="520" font-size="11" fill="#8892a0"
+        transform="rotate(-90 614 520)">residual stream</text>
+
+  <g font-size="12.5" fill="#3d4550">
+    <rect x="626" y="528" width="172" height="32" rx="5" fill="#e5e9ee" stroke="#ccd2da"/>
+    <text x="712" y="549" text-anchor="middle">layers 0-3</text>
+    <rect x="626" y="454" width="172" height="32" rx="5" fill="#e5e9ee" stroke="#ccd2da"/>
+    <text x="712" y="475" text-anchor="middle">layer 4</text>
+    <rect x="626" y="396" width="172" height="32" rx="5" fill="#e5e9ee" stroke="#ccd2da"/>
+    <text x="712" y="417" text-anchor="middle">layer 8</text>
+    <rect x="626" y="338" width="172" height="32" rx="5" fill="#e5e9ee" stroke="#ccd2da"/>
+    <text x="712" y="359" text-anchor="middle">layer 12</text>
+    <rect x="626" y="280" width="172" height="32" rx="5" fill="#e5e9ee" stroke="#ccd2da"/>
+    <text x="712" y="301" text-anchor="middle">layer 16</text>
+    <rect x="626" y="222" width="172" height="32" rx="5" fill="#e5e9ee" stroke="#ccd2da"/>
+    <text x="712" y="243" text-anchor="middle">layer 20</text>
+    <rect x="626" y="164" width="172" height="32" rx="5" fill="#e5e9ee" stroke="#ccd2da"/>
+    <text x="712" y="185" text-anchor="middle">layer 24</text>
+  </g>
+
+  <text x="712" y="610" text-anchor="middle" font-size="12" fill="#9aa2ad">
+    weights never change
+  </text>
+
+  <!-- injection points, on the stream, in the gaps between blocks -->
+  <g>
+    <circle cx="712" cy="434" r="11" fill="#ffffff" stroke="#5b6470" stroke-width="2"/>
+    <path d="M 705 434 h 14 M 712 427 v 14" stroke="#5b6470" stroke-width="2"/>
+    <circle cx="712" cy="382" r="11" fill="#ffffff" stroke="#5b6470" stroke-width="2"/>
+    <path d="M 705 382 h 14 M 712 375 v 14" stroke="#5b6470" stroke-width="2"/>
+    <circle cx="712" cy="266" r="11" fill="#ffffff" stroke="#5b6470" stroke-width="2"/>
+    <path d="M 705 266 h 14 M 712 259 v 14" stroke="#5b6470" stroke-width="2"/>
+    <circle cx="712" cy="208" r="11" fill="#ffffff" stroke="#5b6470" stroke-width="2"/>
+    <path d="M 705 208 h 14 M 712 201 v 14" stroke="#5b6470" stroke-width="2"/>
+    <circle cx="712" cy="150" r="11" fill="#ffffff" stroke="#5b6470" stroke-width="2"/>
+    <path d="M 705 150 h 14 M 712 143 v 14" stroke="#5b6470" stroke-width="2"/>
+  </g>
+
+  <!-- mid-stack point, shared with the single-layer DPO behavior -->
+  <circle cx="712" cy="324" r="12" fill="#ffffff" stroke="#7d5aa0" stroke-width="2.4"/>
+  <path d="M 704 324 h 16 M 712 316 v 16" stroke="#7d5aa0" stroke-width="2.4"/>
+
+  <!-- router tap: same gap, just below the correction -->
+  <circle cx="712" cy="449" r="4.5" fill="#2f6f4f"/>
+
+  <!-- ══════════════ bank ══════════════ -->
+  <text x="168" y="100" text-anchor="middle" font-size="13" fill="#6b7280">bank of behaviors</text>
+  <text x="168" y="118" text-anchor="middle" font-size="12" fill="#9aa2ad">54 MB for all five</text>
+
+  <rect x="52" y="128" width="232" height="266" rx="8"
+        fill="#fbfbfc" stroke="#dfe3e8" stroke-width="1.5"/>
+
+  <g font-size="13">
+    <rect x="70" y="144" width="196" height="36" rx="5" fill="#e8f0fb" stroke="#b9cdea"/>
+    <text x="88" y="167" fill="#28405e">code</text>
+    <text x="248" y="167" text-anchor="end" fill="#7f93ad" font-size="11.5">12.9 MB</text>
+
+    <rect x="70" y="186" width="196" height="36" rx="5" fill="#e8f0fb" stroke="#b9cdea"/>
+    <text x="88" y="209" fill="#28405e">math</text>
+    <text x="248" y="209" text-anchor="end" fill="#7f93ad" font-size="11.5">12.9 MB</text>
+
+    <rect x="70" y="228" width="196" height="36" rx="5" fill="#e8f0fb" stroke="#b9cdea"/>
+    <text x="88" y="251" fill="#28405e">medical</text>
+    <text x="248" y="251" text-anchor="end" fill="#7f93ad" font-size="11.5">12.9 MB</text>
+
+    <rect x="70" y="270" width="196" height="36" rx="5" fill="#e8f0fb" stroke="#b9cdea"/>
+    <text x="88" y="293" fill="#28405e">summary</text>
+    <text x="248" y="293" text-anchor="end" fill="#7f93ad" font-size="11.5">12.9 MB</text>
+
+    <text x="168" y="324" text-anchor="middle" font-size="11" fill="#8ea3bd">
+      supervised fine-tuning, six layers each
+    </text>
+
+    <rect x="70" y="336" width="196" height="36" rx="5" fill="#f3ecf8"
+          stroke="#c9b2dc" stroke-width="1.6"/>
+    <text x="88" y="359" fill="#4a3159">polite</text>
+    <text x="140" y="359" font-size="10.5" fill="#9b86ac">DPO</text>
+    <text x="248" y="359" text-anchor="end" fill="#8d75a3" font-size="11.5">2.2 MB</text>
+  </g>
+
+  <text x="168" y="414" text-anchor="middle" font-size="12" fill="#9aa2ad">
+    one file per behavior
+  </text>
+
+  <!-- ══════════════ router ══════════════ -->
+  <rect x="52" y="446" width="232" height="88" rx="8"
+        fill="#f0f7f3" stroke="#bcd9c9" stroke-width="1.5"/>
+  <text x="168" y="472" text-anchor="middle" font-size="13.5" fill="#2f6f4f">router</text>
+  <text x="168" y="492" text-anchor="middle" font-size="11.5" fill="#5d8a73">11k parameters</text>
+  <text x="168" y="513" text-anchor="middle" font-size="11.5" fill="#5d8a73">
+    w = softmax(W · h) per token
+  </text>
+
+  <path d="M 707 449 L 566 449 L 566 514 L 288 514"
+        fill="none" stroke="#2f6f4f" stroke-width="1.6"
+        stroke-dasharray="5 4" marker-end="url(#arrowAccent)"/>
+  <text x="428" y="506" text-anchor="middle" font-size="11.5" fill="#2f6f4f">
+    reads the stream before the correction
+  </text>
+
+  <!-- ══════════════ blend ══════════════ -->
+  <rect x="344" y="212" width="184" height="102" rx="8"
+        fill="#ffffff" stroke="#5b6470" stroke-width="1.8"/>
+  <text x="436" y="246" text-anchor="middle" font-size="19" fill="#1b1f24">
+    h + Σ w · γ · Δ(h)
+  </text>
+  <text x="436" y="272" text-anchor="middle" font-size="11.5" fill="#6b7280">
+    read the stream, add back to it
+  </text>
+  <text x="436" y="293" text-anchor="middle" font-size="11.5" fill="#6b7280">
+    γ = 0 returns the exact base
+  </text>
+
+  <path d="M 284 250 L 340 250" fill="none" stroke="#5b6470" stroke-width="2"
+        marker-end="url(#arrow)"/>
+  <path d="M 284 468 L 316 468 L 316 302 L 340 302" fill="none"
+        stroke="#2f6f4f" stroke-width="1.8" marker-end="url(#arrowAccent)"/>
+  <text x="328" y="386" text-anchor="middle" font-size="11" fill="#5d8a73"
+        transform="rotate(-90 328 386)">weights</text>
+
+  <!-- into the stream, not into the blocks -->
+  <g fill="none" stroke="#5b6470" stroke-width="1.6" marker-end="url(#arrow)">
+    <path d="M 528 222 L 588 222 L 588 150 L 697 150"/>
+    <path d="M 528 234 L 578 234 L 578 208 L 697 208"/>
+    <path d="M 528 246 L 568 246 L 568 266 L 697 266"/>
+    <path d="M 528 280 L 558 280 L 558 382 L 697 382"/>
+    <path d="M 528 292 L 548 292 L 548 434 L 697 434"/>
+  </g>
+  <path d="M 528 264 L 592 264 L 592 324 L 696 324" fill="none"
+        stroke="#7d5aa0" stroke-width="1.8" marker-end="url(#arrowPolite)"/>
+
+  <text x="556" y="122" text-anchor="end" font-size="11.5" fill="#6b7280">
+    corrections are added here
+  </text>
+
+  <!-- ══════════════ the single-layer note ══════════════ -->
+  <rect x="52" y="554" width="500" height="60" rx="8"
+        fill="#faf7fc" stroke="#dccdea" stroke-width="1.4"/>
+  <circle cx="76" cy="585" r="9" fill="#ffffff" stroke="#7d5aa0" stroke-width="2"/>
+  <path d="M 70 585 h 12 M 76 579 v 12" stroke="#7d5aa0" stroke-width="2"/>
+  <text x="98" y="576" font-size="12.5" fill="#4a3159">
+    DPO and reinforcement learning need only one layer.
+  </text>
+  <text x="98" y="596" font-size="12.5" fill="#6b6274">
+    It sits in the middle of the stack. Supervised behaviors use six.
+  </text>
+
+  <text x="52" y="644" font-size="12" fill="#9aa2ad">
+    the mixture is recomputed for every token
+  </text>
+</svg>
