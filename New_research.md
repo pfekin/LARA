@@ -392,12 +392,6 @@ Thai is already partly represented in the base, so the correction has something 
       primaryClass={cs.LG},
       url={https://arxiv.org/abs/2607.28669},
 }
-@software{ekin2026lara,
-  title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs. Runs many behaviors per token.},
-  author  = {Pascal Ekin},
-  year    = {2026},
-  url     = {https://github.com/pfekin/LARA}
-}
 ```
 
 ## License
