@@ -192,8 +192,7 @@ bank.top_k = 1       # hard selection, one behavior per token
   <source media="(prefers-color-scheme: dark)" srcset="media/figure3_per_token_routing_dark.gif">
   <img alt="Routing weight across a sentence: the mix shifts from one behavior to another as the text is generated" src="media/figure3_per_token_routing.gif">
 </picture>
-
-Behaviors with no weight are skipped, so cost tracks `top_k` rather than the size of the bank. Blending is worth having when behaviors overlap, since a token the router is unsure about gets a mixture rather than a single wrong choice.
+A behavior whose weight is zero is not computed at all. The cost of a token depends on how many behaviors actually apply to it, not on how many are loaded, so a large bank is no slower than a small one. Blending is worth having when behaviors overlap, since a token the router is unsure about gets a mixture rather than a single wrong choice.
 
 Weight-space adapters do not blend as readily. A LoRA update costs nothing at inference once it is merged into the weight matrix, but merging commits the model to one adapter, the same for every token. Mixing several per token means leaving them all unmerged and computing each one's contribution at every matrix it targets, so the work grows with the number of adapters times the number of target matrices. A LARA behavior contributes one vector per layer it sits on, whatever the base does at that layer, so mixing is a weighted sum of vectors.
 
@@ -298,7 +297,7 @@ Acetaminophen (Tylenol) is a common over-the-counter pain reliever that
 reduces fever but does NOT increase bleeding risk.
 ```
 
-One example is an illustration and not a measurement. It shows the narrow point: a lightweight learned behavior can change the model's answer on a domain-specific distinction without changing the base model. A 2.4M parameter correction cannot store medical knowledge, so it did not teach the model that fact. It made a fact the base already held reachable.
+One example is an illustration and not a measurement. It shows the narrow point: a lightweight learned behavior can change the model's answer on a domain-specific distinction without changing the base model.
 
 That suggests a local-AI pattern:
 
@@ -370,7 +369,7 @@ Covers layer resolution, the no-op at initialization, freezing, save and load, r
 
 ## Results
 
-LARA matches LoRA at equal parameter counts on fine-tuning, preference optimization and reinforcement learning, and the behaviors carry across base models including one whose weights are binary.
+For supervised fine-tuning, LARA matches LoRA at equal parameter counts. For DPO and GRPO a single adapter in the middle of the network is enough, which is a much smaller artifact than a comparable LoRA. Behaviors carry across base models and across quantization, down to binary weights. LARA reads and writes activations, so it does not depend on how the base stores its parameters.
 
 Measurements, the gamma sweeps and the routing tables are in [research.md](research.md), alongside the [benchmark code](https://github.com/pfekin/LARA/tree/main/research) that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669) and the instructions to rerun it.
 
