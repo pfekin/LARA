@@ -272,7 +272,7 @@ Local AI changes the constraints around customization. A small model running on 
 
 LARA offers another way to express customization: learn the behavior once and keep it in a small residual-stream adaptation rather than spelling it out in a long prompt at every interaction. A model can acquire a user's preferred writing style, a tutor's teaching method, a company's house style, or a domain-specific way of reasoning without reconstructing all of that from the context window each time.
 
-This does not replace RAG. RAG provides information the model does not have, a behavior changes how the model uses information it already has. The two are complementary. The point is that behavior need not consume context.
+This does not replace RAG. RAG provides information the model does not have. A behavior changes how the model uses information it already has. The two are complementary. The point is that behavior need not consume context.
 
 The small size of the artifacts is what makes this practical at the edge. A device can carry one base model and a bank of specialized behaviors, and a new specialization is distributed as a small adapter rather than another copy of the base. That matters where storage, memory and network access are constrained, and it allows personal adaptations to stay on the device rather than being sent to a server.
 
