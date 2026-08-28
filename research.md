@@ -191,6 +191,21 @@ The main reported findings are:
 - Seven behaviors can share one frozen 3 GB base for about 33 MB of adapter storage and can be routed per token with hard or soft routing.
 - In the reported Qwen3-1.7B GRPO experiment, a 530k-parameter LARA behavior reached a similar constraint-satisfaction result to an 8.7M-parameter LoRA behavior, while using substantially less trainable and stored parameter capacity.
 
+### Memory footprint
+
+Sections 4 and 5 hold LARA and LoRA at the same parameter budget by construction, so those comparisons say nothing about size.
+
+The size difference shows up in two other places.
+
+The first is per behavior. The number of insertion points depends on the training objective.
+
+| objective | insertion points | LARA | LoRA |
+|---|---|---|---|
+| fine-tuning | six layers | 2.4M parameters | 2.2M, matched |
+| DPO, GRPO | one (middle) layer | 530k parameters, 2.2 MB | 8.7M parameters, 34.9 MB |
+
+The second is per bank. The base model is shared rather than copied, so a behavior does not carry the model it adapts. Seven behaviors occupy about 33 MB over one frozen 3 GB base, against roughly 21 GB for seven separately fine-tuned models.
+
 ## Citation
 
 ```bibtex
