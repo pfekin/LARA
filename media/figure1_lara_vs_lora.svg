@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5b6470"/>
+    </marker>
+    <marker id="a1s" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8892a0"/>
+    </marker>
+  </defs>
+
+  <rect width="900" height="520" fill="#ffffff"/>
+
+  <text x="450" y="40" text-anchor="middle" font-size="21" fill="#1b1f24">
+    Two places to put the adaptation
+  </text>
+
+  <line x1="450" y1="76" x2="450" y2="470" stroke="#e8ebef" stroke-width="1.5"/>
+
+  <!-- ══════════════ LoRA ══════════════ -->
+  <text x="235" y="98" text-anchor="middle" font-size="17" fill="#1b1f24">LoRA</text>
+  <text x="235" y="120" text-anchor="middle" font-size="13" fill="#6b7280">
+    changes the weight matrices
+  </text>
+
+  <line x1="235" y1="460" x2="235" y2="160" stroke="#8892a0" stroke-width="3"
+        marker-end="url(#a1s)"/>
+
+  <rect x="145" y="290" width="180" height="82" rx="6"
+        fill="#e8f0fb" stroke="#5b86c4" stroke-width="2"/>
+  <text x="235" y="320" text-anchor="middle" font-size="13.5" fill="#28405e">
+    attention / MLP
+  </text>
+  <text x="235" y="346" text-anchor="middle" font-size="15" fill="#28405e">
+    W + BA
+  </text>
+
+  <rect x="255" y="272" width="70" height="20" rx="10" fill="#5b86c4"/>
+  <text x="290" y="286" text-anchor="middle" font-size="11" fill="#ffffff">changed</text>
+
+  <text x="235" y="410" text-anchor="middle" font-size="12.5" fill="#4a5260">
+    the adapted model is a new set of weights
+  </text>
+  <text x="235" y="432" text-anchor="middle" font-size="12" fill="#9aa2ad">
+    merged in, or applied matrix by matrix at runtime
+  </text>
+
+  <!-- ══════════════ LARA ══════════════ -->
+  <text x="665" y="98" text-anchor="middle" font-size="17" fill="#1b1f24">LARA</text>
+  <text x="665" y="120" text-anchor="middle" font-size="13" fill="#6b7280">
+    changes the residual stream
+  </text>
+
+  <line x1="665" y1="460" x2="665" y2="160" stroke="#8892a0" stroke-width="3"
+        marker-end="url(#a1s)"/>
+
+  <rect x="575" y="290" width="180" height="82" rx="6"
+        fill="#eef0f3" stroke="#ccd2da" stroke-width="2"/>
+  <text x="665" y="336" text-anchor="middle" font-size="13.5" fill="#5b6470">
+    attention / MLP
+  </text>
+
+  <rect x="685" y="272" width="66" height="20" rx="10" fill="#aab2bd"/>
+  <text x="718" y="286" text-anchor="middle" font-size="11" fill="#ffffff">frozen</text>
+
+  <circle cx="665" cy="215" r="12" fill="#ffffff" stroke="#5b6470" stroke-width="2"/>
+  <path d="M 657 215 h 16 M 665 207 v 16" stroke="#5b6470" stroke-width="2"/>
+
+  <rect x="445" y="180" width="120" height="72" rx="6"
+        fill="#ffffff" stroke="#5b6470" stroke-width="1.8"/>
+  <text x="505" y="208" text-anchor="middle" font-size="15" fill="#1b1f24">Δ(h)</text>
+  <text x="505" y="230" text-anchor="middle" font-size="11.5" fill="#6b7280">rank r</text>
+
+  <circle cx="665" cy="282" r="4.5" fill="#5b6470"/>
+  <path d="M 659 282 L 620 282 L 620 238 L 569 238" fill="none"
+        stroke="#5b6470" stroke-width="1.6" stroke-dasharray="5 4"
+        marker-end="url(#a1)"/>
+  <text x="592" y="256" text-anchor="middle" font-size="11" fill="#8892a0">reads h</text>
+
+  <path d="M 565 209 L 649 209" fill="none" stroke="#5b6470" stroke-width="1.8"
+        marker-end="url(#a1)"/>
+  <text x="606" y="200" text-anchor="middle" font-size="11" fill="#8892a0">adds back</text>
+
+  <text x="665" y="410" text-anchor="middle" font-size="12.5" fill="#4a5260">
+    the adapted model is the base plus a file
+  </text>
+  <text x="665" y="432" text-anchor="middle" font-size="12" fill="#9aa2ad">
+    set gamma to 0 and the base returns exactly
+  </text>
+
+  <text x="450" y="490" text-anchor="middle" font-size="12.5" fill="#6b7280">
+    Both are low-rank and both leave most of the model alone. The difference is what they write to.
+  </text>
+</svg>
