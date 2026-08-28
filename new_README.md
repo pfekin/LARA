@@ -46,7 +46,7 @@ LoRA showed that useful adaptation does not require updating every parameter of 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="media/figure1_lara_vs_lora_dark.svg">
-  <img alt="LoRA changes the weight matrices; LARA reads the residual stream and adds a low-rank correction back to it, leaving the block frozen." src="media/figure1_lara_vs_lora.svg">
+  <img alt="LoRA changes the weight matrices. LARA reads the residual stream and adds a low-rank correction back to it, leaving the block frozen." src="media/figure1_lara_vs_lora.svg">
 </picture>
 
 The base model is loaded once and stays frozen. Each behavior is a separate file, typically a few megabytes. That makes it practical to keep several behaviors on the same model rather than producing a full model for every specialization.
