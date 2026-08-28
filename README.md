@@ -10,8 +10,7 @@
   <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_hero_dark.png">
   <img alt="LARA reads the hidden state between layers, computes a low-rank correction, and adds it back to the residual stream" src="media/LARA_readme_hero.png">
 </picture>
-
-[Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5)
+[Paper](https://doi.org/10.48550/arXiv.2607.28669) · [Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5)
 
 Foundation models made it practical to train a general model first and tailor it afterwards. LARA is a post-training method for that second step. It adapts a frozen language model without changing its weights, producing a small behavior artifact that remains separate from the base model.
 
