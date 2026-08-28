@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 =============================================================================
- benchmark_routed.py — LARA coupled: many behaviors, one frozen base
+ routed.py — LARA coupled: many behaviors, one frozen base
 =============================================================================
 Not a rival to MoE on capacity. The claim is a DEPLOYMENT one: a frozen
 (possibly quantized, edge-sized) model already holds the knowledge; LARA adapters
