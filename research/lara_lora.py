@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 =============================================================================
- benchmark.py — LARA: a base-preserving, residual-stream adapter
+ lara_lora.py — LARA: a base-preserving, residual-stream adapter
 =============================================================================
 THE METHOD — one frozen base, low-rank operators on the residual stream:
     at each bridge layer, read the layer's hidden state h, and add back
