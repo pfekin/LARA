@@ -1,11 +1,16 @@
 # LARA
 
 **Lightweight Additive Residual Adaptation**: post-training for frozen language models, with small adaptations that can be combined as a **Mixture of Behaviors (MoBs)**.
-<div align="left">    
-    
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
+<div align="left">
+
+[![arXiv](https://img.shields.io/badge/arXiv-2607.28669-v1.svg)](https://doi.org/10.48550/arXiv.2607.28669)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/examples/quickstart.ipynb)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+
 </div>
 
 <picture>
@@ -13,15 +18,40 @@
   <img alt="LARA reads the hidden state between layers, computes a low-rank correction, and adds it back to the residual stream" src="media/LARA_readme_hero.png">
 </picture>
 
-[Paper](https://doi.org/10.48550/arXiv.2607.28669) · 
-[Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5)
+[Paper](https://doi.org/10.48550/arXiv.2607.28669) · [Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5)
 
+Foundation models made a different approach to AI development possible: build a general model first, then tailor it for particular purposes afterwards. LARA is a post-training method for that second step. It adapts a frozen language model without modifying its weights, producing a small behavior artifact that is kept separate from the base model.
 
+At a small set of layers, LARA reads the hidden state, computes a low-rank correction, and adds it back to the residual stream. The base model is loaded once and stays frozen, so each behavior is a separate file of a few megabytes, and several can sit on one model at the same time.
 
+What it adds over a weight-space adapter is a scale you can turn at inference, and the ability to hold many behaviors resident on one base and pick between them per token.
 
-LARA adapts a language model without writing to its weights. At a small set of layers it reads the hidden state, computes a low-rank correction, and adds it back to the residual stream. The base model is loaded once and stays frozen, so each adapted behavior is a separate file of a few megabytes, and several of them can sit on one model at the same time.
+The larger system built around LARA is **Mixture of Behaviors (MoBs)**. A MoB is a collection of independently trained behaviors sharing one frozen base. Behaviors can be trained with SFT, DPO, GRPO or other post-training methods. At inference they can be selected, scaled, pinned or composed, with hard or soft routing.
 
-On a code fine-tuning task, LARA matches LoRA at equal parameter counts. The same is true for preference optimization (DPO) and reinforcement learning (GRPO), where LARA matched LoRA with sixteen times fewer parameters. What it adds is a scale you can turn at inference, and the ability to hold many behaviors resident on one base and pick between them per token.
+The distinction is useful:
+
+```text
+capability        = base model
+behavior          = learned adaptation
+selection         = router
+strength          = runtime scaling
+combination       = composition
+```
+
+This turns post-training into a modular layer around a foundation model.
+
+## Why LARA
+
+LoRA showed that useful adaptation does not require updating every parameter of a language model. LARA follows the same motivation but places the correction in the residual stream rather than in the model's weight matrices.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="media/figure1_lara_vs_lora_dark.svg">
+  <img alt="LoRA changes the weight matrices; LARA reads the residual stream and adds a low-rank correction back to it, leaving the block frozen." src="media/figure1_lara_vs_lora.svg">
+</picture>
+
+The base model is loaded once and stays frozen. Each behavior is a separate file, typically a few megabytes. That makes it practical to keep several behaviors on the same model rather than producing a full model for every specialization.
+
+The point is not smaller fine-tuning. It is adaptation that is **independent, composable and runtime-selectable**.
 
 ## How it works
 
@@ -33,9 +63,9 @@ h = h + gamma * (alpha / rank) * up(down(layer_norm(h)))
 
 `down` projects to rank `r`, `up` projects back. `up` starts at zero, so an untrained adapter contributes nothing and the model is exactly the base. Nothing else is touched: with the adapters removed the forward pass is identical, bit for bit.
 
-At rank 128 over six layers of a 1.5B model that is about 2.4M trainable parameters, or 33 MB for seven behaviors.
+At rank 128 over six layers of a 1.5B model that is about 2.4M trainable parameters, a few megabytes on disk.
 
-Because no weights are modified, behaviors compose. A small router reads the frozen hidden state and produces a per-token distribution over the behaviors in the bank, and their corrections are blended by weight. Behaviors compose rather than replace one another, and there is no limit to how many you install.
+Because no weights are modified, behaviors compose. A small router reads the frozen hidden state and produces a per-token distribution over the behaviors in the bank, and their corrections are blended by weight. There is no limit to how many you install.
 
 ## Install
 
@@ -76,9 +106,9 @@ lara.save("behaviors/code", route_samples=prompts[:200])
 
 `layers=6` spreads six adapters evenly over the depth. On a 28-layer model that resolves to `[4, 8, 12, 16, 20, 24]`. Pass a list instead for exact control.
 
-LARA does not replace or wrap the trainer. It attaches the adapters to the model and freezes everything else, so `model.parameters()` reaches the adapters and any trainer picks them up: the HF `Trainer`, TRL's `DPOTrainer` or `GRPOTrainer`, or a loop you wrote yourself. The objective makes no difference to the artifact. A behavior trained with cross-entropy, with DPO, or with a policy gradient loads and routes exactly the same way.
+LARA does not replace or wrap the trainer. It attaches the adapters to the model and freezes everything else, so `model.parameters()` reaches the adapters and any trainer picks them up: the HF `Trainer`, TRL's `DPOTrainer` or `GRPOTrainer`, or a loop you wrote yourself. The objective makes no difference to the artifact. A behavior trained with cross-entropy, with DPO, or with a policy gradient loads and routes exactly the same way, and enters the same bank.
 
-Fine-tuning benefits from several insertion points. Preference optimization reaches the same quality with a single adapter in the middle of the network, and a policy gradient behaved the same way in testing, so `layers=1` is often enough for both.
+Fine-tuning benefits from several insertion points. Preference optimization and reinforcement learning reach the same quality with a single adapter in the middle of the network, so `layers=1` is often enough for both. See [research.md](research.md).
 
 ## Turn the adaptation up or down
 
@@ -92,7 +122,33 @@ lara.gamma = 1.0     # the trained behavior
 
 Useful range is roughly 0 to 1.5. Past that the correction is amplified beyond what it was trained for and quality falls away.
 
-## Run many behaviors on one model
+## Mixture of Behaviors
+
+A **MoB** is the bank of behaviors and the mechanism that selects or combines them over one frozen base.
+
+For example:
+
+```text
+one base model
+
+    + code behavior
+    + math behavior
+    + medical behavior
+    + summary behavior
+    + writing-style behavior
+    + tutor behavior
+```
+
+Each item is an independent artifact. The MoB is the collection and the runtime mixture; a single behavior is not itself a MoB.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="media/figure2_mobs_dark.svg">
+  <img alt="One frozen base with a bank of behaviors. Corrections are added to the residual stream between layers, and a small router weights them per token." src="media/figure2_mobs.svg">
+</picture>
+
+<sub>Five behaviors on Qwen3-1.7B. Sizes vary with rank and layer count.</sub>
+
+Load several behaviors:
 
 ```python
 from lara import Bank
@@ -131,9 +187,10 @@ bank.top_k = None    # blend all of them by weight (default)
 bank.top_k = 2       # blend the two highest, ignore the rest
 bank.top_k = 1       # hard selection, one behavior per token
 ```
+
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_routing_dark.png">
-  <img alt="Routing weight across a sentence: the mix shifts from finance to code to summarizing as the text is generated" src="media/LARA_readme_routing.png">
+  <source media="(prefers-color-scheme: dark)" srcset="media/figure3_per_token_routing_dark.gif">
+  <img alt="Routing weight across a sentence: the mix shifts from one behavior to another as the text is generated" src="media/figure3_per_token_routing.gif">
 </picture>
 
 Behaviors with no weight are skipped, so cost tracks `top_k` rather than the size of the bank. Blending is worth having when behaviors overlap, since a token the router is unsure about gets a mixture rather than a single wrong choice.
@@ -166,9 +223,98 @@ bank.route_weights(input_ids)
 # {'code': 0.71, 'math': 0.04, 'polite': 0.25}
 ```
 
+## Why MoBs matter
+
+With conventional fine-tuning, specialization tends to produce another model:
+
+```text
+base model
+   │
+   ├── fine-tune → model A
+   ├── fine-tune → model B
+   └── fine-tune → model C
+```
+
+With LARA and MoBs the base capability is shared and the learned behaviors stay independent. This becomes more useful as the number of adaptations grows: a bank of behaviors occupies megabytes of adapter storage rather than one multi-gigabyte model per specialization.
+
+Behaviors also need not be mutually exclusive. A system can combine them at inference: a mathematical behavior together with a tutoring behavior and a preferred writing style, without training a full model for that combination.
+
+That suggests a general way to think about post-training: **capability in the foundation model, behavior in small learned modules**.
+
+## Modular cognition
+
+The MoB architecture can be read as a form of modular cognition. Different learned behaviors encode different ways of using the same underlying model:
+
+```text
+base capability
+      │
+      ├── planner
+      ├── verifier
+      ├── critic
+      ├── domain specialist
+      ├── tutor
+      └── personal style
+```
+
+A router can select among them or combine them.
+
+The analogy with mixture-of-experts is useful, but the target is different. A conventional MoE routes among experts that are part of one model, mainly to increase capacity. MoBs route among lightweight adaptations over a shared base, to make post-training modular. That difference makes behaviors closer to software components than to further copies of a model.
+
+## Applications
+
+The same architecture applies wherever one model needs several modes of operation. A local AI tutor could combine mathematics, tutoring and a student's preferred explanation style. A coding assistant could combine language-specific coding, debugging, testing and security review. An enterprise model could share one base across departments while keeping separate legal, finance, support and engineering adaptations. A personal AI could maintain a small bank of writing, task and preference behaviors.
+
+These applications do not depend on local inference. The modularity applies to server-side systems as well.
+
+## Why this matters for small local models
+
+Local AI changes the constraints around customization. A small model running on a phone or PC has less room for long system prompts, extended histories and large RAG contexts than a frontier model in the cloud. Those techniques remain useful, but they become an expensive way of telling a small model how to behave.
+
+LARA offers another way to express customization: learn the behavior once and keep it in a small residual-stream adaptation rather than spelling it out in a long prompt at every interaction. A model can acquire a user's preferred writing style, a tutor's teaching method, a company's house style, or a domain-specific way of reasoning without reconstructing all of that from the context window each time.
+
+This does not replace RAG. RAG provides information the model does not have; a behavior changes how the model uses information it already has. The two are complementary. The point is that behavior need not consume context.
+
+The small size of the artifacts is what makes this practical at the edge. A device can carry one base model and a bank of specialized behaviors, and a new specialization is distributed as a small adapter rather than another copy of the base. That matters where storage, memory and network access are constrained, and it allows personal adaptations to stay on the device rather than being sent to a server.
+
+## Small model, specialized behavior
+
+A small base model can become substantially more useful through domain adaptation. An informal test with **Qwen3-1.7B** illustrates the idea. The question was:
+
+> Name a common over-the-counter pain reliever that reduces fever but does NOT increase bleeding risk.
+
+The question is deliberately discriminative. Acetaminophen and ibuprofen both reduce pain and fever, but ibuprofen is an NSAID and carries a bleeding warning, whereas acetaminophen is not an NSAID. The intended answer was **acetaminophen (Tylenol)**.
+
+With all behaviors disabled, the 1.7B model answered:
+
+```text
+A common over-the-counter (OTC) pain reliever that reduces and does not
+significantly increase bleeding risk is ibuprofen.
+```
+
+With the medical behavior enabled, the same model answered:
+
+```text
+Acetaminophen (Tylenol) is a common over-the-counter pain reliever that
+reduces fever but does NOT increase bleeding risk.
+```
+
+One example is an illustration and not a measurement. It shows the narrow point: a lightweight learned behavior can change the model's answer on a domain-specific distinction without changing the base model. A 2.4M parameter correction cannot store medical knowledge, so it did not teach the model that fact. It made a fact the base already held reachable.
+
+That suggests a local-AI pattern:
+
+```text
+small general model
+        +
+learned behavior
+        ↓
+specialized local model
+```
+
+The same pattern applies to problem solving, coding, tutoring, writing style and other kinds of specialization. Measurements across five behaviors and four base models are in [research.md](research.md).
+
 ## What a behavior looks like on disk
 
-```
+```text
 behaviors/code/
   adapter.safetensors     the projections, a few MB
   config.json             layers, rank, alpha, base model id
@@ -214,7 +360,6 @@ Run 01 and 02 first, since 03 uses what they write.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/examples/quickstart.ipynb)
 
-
 ## Tests
 
 ```bash
@@ -223,21 +368,23 @@ python tests/test_lara.py
 
 Covers layer resolution, the no-op at initialization, freezing, save and load, routing, `top_k`, pinning, and incremental addition. No model download, so it runs anywhere.
 
-## Paper and experiments
+## Results
 
-The benchmark [code](https://github.com/pfekin/LARA/tree/main/research) that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669), with the [configuration and instructions](research.md) to rerun it.
+LARA matches LoRA at equal parameter counts on fine-tuning, preference optimization and reinforcement learning, and the behaviors carry across base models including one whose weights are binary.
+
+Measurements, the gamma sweeps and the routing tables are in [research.md](research.md), alongside the [benchmark code](https://github.com/pfekin/LARA/tree/main/research) that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669) and the instructions to rerun it.
 
 ## Citation
 
 ```bibtex
 @article{ekin2026laralightweightadaptersresidual,
-      title={LARA: Lightweight Adapters in the Residual Stream for Composable Adaptation and Alignment}, 
+      title={LARA: Lightweight Adapters in the Residual Stream for Composable Adaptation and Alignment},
       author={Pascal Ekin and Hyosun Choi and Wei Jie},
       year={2026},
       eprint={2607.28669},
       archivePrefix={arXiv},
       primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2607.28669}, 
+      url={https://arxiv.org/abs/2607.28669},
 }
 @software{ekin2026lara,
   title   = {Lightweight Additive Residual Adaptation (LARA): residual-stream adapters for frozen LLMs. Runs many behaviors per token.},
