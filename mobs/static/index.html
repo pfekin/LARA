@@ -6,8 +6,14 @@
 <title>MoBs — mixture of behaviors</title>
 <style>
   :root {
-    --ink:#e8e6e1; --dim:#7d7a73; --line:#2a2a28; --bg:#131312; --panel:#1a1a18;
-    --live:#c8e64a; --off:#3a3a36; --route:#4a7fc8;
+    --ink:#1a1a18; --dim:#7d7a73; --line:#e2e0da; --bg:#faf9f6; --panel:#ffffff;
+    --live:#5b7f00; --off:#c9c6bf; --route:#3a6fb0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink:#e8e6e1; --dim:#7d7a73; --line:#2a2a28; --bg:#131312; --panel:#1a1a18;
+      --live:#c8e64a; --off:#3a3a36; --route:#4a7fc8;
+    }
   }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); min-height:100vh;
