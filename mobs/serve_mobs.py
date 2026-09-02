@@ -1,16 +1,7 @@
 #!/usr/bin/env python3
 """MoBs inference server. One process, one page, no cloud.
 
-    #pip install fastapi uvicorn transformers accelerate bitsandbytes
-    
-    pip -q install transformers accelerate datasets safetensors 
-    
-    # IF CUDA
-    pip install kernels
-    #
-    
-    pip -q install git+https://github.com/pfekin/LARA.git
-    
+    pip install fastapi uvicorn transformers accelerate bitsandbytes
     python serve_mobs.py --base Qwen/Qwen3-4B --bank behaviors
     python serve_mobs.py --bank pfekin/mobs-qwen3-4b --quant 4bit
 
@@ -278,7 +269,13 @@ def make_app(model, tok, bank, names, args):
             return {"weights": {}}
         ids = tok(text, return_tensors="pt").input_ids
         async with lock:
-            return {"weights": bank.route_weights(ids)}
+            try:
+                return {"weights": bank.route_weights(ids)}
+            except Exception as e:
+                # The route hook returns early when the bank is disabled, so the
+                # weights are simply unavailable. This is a display hint; it must
+                # never take the server down.
+                return {"weights": {}, "note": type(e).__name__}
 
     if STATIC.exists():
         app.mount("/static", StaticFiles(directory=STATIC), name="static")
@@ -295,18 +292,33 @@ class _null:
     def __exit__(self, *a): return False
 
 
+DEFAULTS = dict(
+    bank="pfekin/mobs-qwen3.5-4b",
+    quant="4bit",
+    dtype="bfloat16",
+    max_new=512,
+)
+
+
+def defaults():
+    """So a notebook or another caller reads the same values as the CLI."""
+    return dict(DEFAULTS)
+
+
 def main(argv=None):
     if argv is None and ("ipykernel" in sys.modules or "google.colab" in sys.modules):
         argv = []
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", default="Qwen/Qwen3.5-4B")
-    ap.add_argument("--bank", default="behaviors", help="directory or HF repo id")
-    ap.add_argument("--quant", default="4bit", choices=["4bit", "8bit", "none"])
-    ap.add_argument("--dtype", default="bfloat16",
+    ap.add_argument("--bank", default=DEFAULTS["bank"],
+                    help="directory or HF repo id")
+    ap.add_argument("--quant", default=DEFAULTS["quant"],
+                    choices=["4bit", "8bit", "none"])
+    ap.add_argument("--dtype", default=DEFAULTS["dtype"],
                     choices=["bfloat16", "float16", "float32"])
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8000)
-    ap.add_argument("--max-new", type=int, default=512)
+    ap.add_argument("--max-new", type=int, default=DEFAULTS["max_new"])
     args = ap.parse_args(argv)
 
     preflight()
@@ -325,4 +337,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    main(["--bank", "pfekin/mobs-qwen3.5-4b"])
+    main()
