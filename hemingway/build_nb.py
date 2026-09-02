@@ -968,7 +968,7 @@ def compare(prompt, author=None, max_new=180, seed=0):
     with_gammas(0.0)                       # silence the rest of the bank too
     block("frozen base", gen(prompt, max_new, base=True, seed=seed))
     for n in mine:
-        with_gammas({n: 1.0})
+        with_gammas({n: 1.5})
         block(n, gen(prompt, max_new, seed=seed))
     if len(mine) > 1:
         with_gammas({n: 1.0 for n in mine})
@@ -1038,7 +1038,7 @@ PROMPTS = {
                "party he was not invited to.",
     "leaving": "Write a short exchange between two people who disagree about leaving.",
 }
-PROMPT = PROMPTS["object"]
+PROMPT = PROMPTS["waiting"]
 
 contrast(PROMPT)
 ''')
