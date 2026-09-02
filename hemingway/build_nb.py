@@ -993,7 +993,7 @@ def contrast(prompt, max_new=180, seed=0):
     block("frozen base", gen(prompt, max_new, base=True, seed=seed))
     for a in sorted(by):
         for n in by[a]:
-            with_gammas({n: 1.0})
+            with_gammas({n: 1.5})
             block(n, gen(prompt, max_new, seed=seed))
         if len(by[a]) > 1:
             with_gammas({n: 1.0 for n in by[a]})
