@@ -373,6 +373,27 @@ For supervised fine-tuning, LARA matches LoRA at equal parameter counts. For DPO
 
 Measurements, the gamma sweeps and the routing tables are in [research.md](research.md), alongside the [benchmark code](https://github.com/pfekin/LARA/tree/main/research) that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669) and the instructions to rerun it.
 
+## Notebooks
+
+Two notebooks run on Colab without setup. Both load trained behaviors from the
+Hub, so neither needs a Hugging Face account or a token.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb)
+**[mobs/mobs_playground.ipynb](mobs/mobs_playground.ipynb)** puts a bank of
+behaviors on one frozen base and gives you a fader per behavior. Move one and the
+answer changes while the model runs. Three short examples show what a behavior
+changes that a prompt cannot: a code behavior turning a documented function into
+a two-line one, a bank getting an arithmetic question right that the base gets
+wrong, and a summary behavior cutting a 352-token answer to seventeen. Training
+your own is at the end, switched off by default.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/hemingway/hemingway_style.ipynb)
+**[hemingway/hemingway_style.ipynb](hemingway/hemingway_style.ipynb)** trains
+writing styles from public-domain texts, two behaviors per author with different
+objectives, and compares them on one prompt. It also shows what happens past the
+strength a behavior was trained at: the style arrives, then turns into a parody
+of itself, and which author breaks first is not random.
+
 ## Citation
 
 ```bibtex
