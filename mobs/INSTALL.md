@@ -5,8 +5,14 @@ with one fader per behavior. Nothing is written to the model, so pulling every
 fader to zero gives you the original back exactly.
 
 If you would rather not install anything, the
-[Colab notebook](../notebooks/mobs_playground.ipynb) does the same thing in a
+[Colab notebook](../mobs/mobs_playground.ipynb) does the same thing in a
 browser tab.
+
+
+<a href="https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+</a>
+
 
 ## What you need
 
