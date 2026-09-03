@@ -16,8 +16,8 @@
 <!-- Interactive Demos - borderless table -->
 <br>
 
-**🎮 Try the interactive demos on a free T4 GPU. No setup, no account, no Hugging Face token required to run the pre-trained behaviors.
-(Training a new behavior requires a paid L4 runtime and a Hugging Face account to save your trained artifact.)**
+**🎮 Try the interactive demos on a free T4 GPU. No setup, no account, no Hugging Face token required to run the pre-trained behaviors.**
+(Training a new behavior requires a paid L4 runtime and a Hugging Face account to save your trained artifact.)
 
 <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; width: 100%;">
   <tr>
