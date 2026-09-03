@@ -1,18 +1,28 @@
-
 # LARA
 
 **Lightweight Additive Residual Adaptation**: post-training for frozen language models, with small adaptations that can be combined as a **Mixture of Behaviors (MoBs)**.
 
+<!-- Standard Metadata Badges (compact, neutral) -->
 <div align="left">
 
 [![arXiv](https://img.shields.io/badge/arXiv-2607.28669-v1.svg)](https://doi.org/10.48550/arXiv.2607.28669)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/examples/quickstart.ipynb)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 
 </div>
+
+<!-- Interactive Demos - visually separated from the badges -->
+<br>
+
+**🎮 Try LARA in your browser – no setup, no account required.**
+
+| | |
+| :--- | :--- |
+| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb) **Multi-Behavior Playground** – Adjust live sliders and watch the model's output change in real time. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/hemingway/hemingway_style.ipynb) **Hemingway Style Mimicry** – Train a model to write in famous literary styles, then push it until it becomes a self-parody. |
+
+---
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_hero_dark.png">
