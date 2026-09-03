@@ -85,8 +85,8 @@ LoRA showed that useful adaptation does not require updating every parameter. LA
 | :--- | :--- | :--- |
 | **Where it acts** | Weight matrices | Residual stream |
 | **Can blend multiple adapters per token?** | No (must merge weights) | Yes (weighted sum) |
-| **Adapter size (SFT, 6 LARA layers)** | Varies by model (often 15–50M) | ~2.4M parameters |
-| **Adapter size (DPO/GRPO, 1 LARA layer)** | Varies (often 15–50M) | **~0.4M parameters** |
+| **Adapter size (SFT)** | ~2.2M parameters | ~2.4M parameters |
+| **Adapter size (DPO/GRPO, 1 LARA layer)** | ~2.2M parameters | **~0.4M parameters** |
 | **Runtime scaling** | Fixed at merge time | Adjustable via `gamma` |
 
 *Note: Qwen3-1.7B has 28 total layers. LARA inserts adapters at a subset of them (e.g., 6 evenly spaced for SFT, or a single middle layer for DPO/GRPO).*
