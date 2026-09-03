@@ -387,7 +387,7 @@ writing styles from public-domain texts, two behaviors per author with different
 objectives, and compares them on one prompt. It also shows what happens past the
 strength a behavior was trained at: the style arrives, then turns into a parody
 of itself, and which author breaks first is not random.
-
+ 
 
 ## Results
 
