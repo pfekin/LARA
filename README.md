@@ -13,32 +13,20 @@
 
 </div>
 
+---
+
 <!-- Interactive Demos - borderless table -->
 <br>
 
-**🎮 Try the interactive demos on a free T4 GPU. No setup, no account, no Hugging Face token required to run the pre-trained behaviors.**
+**🎮 Try the interactive demo on a free T4 GPU. No setup, no account, no Hugging Face token required to run the pre-trained behavior.**
 (Training a new behavior requires a paid L4 runtime and a Hugging Face account to save your trained behavior.)
 
-<table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; width: 100%;">
-  <tr>
-    <td style="border: none; padding-right: 30px; vertical-align: top; width: 50%;">
-      <a href="https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb">
-        <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
-      </a>
-      <br>
-      <strong>🎛️ Multi-Behavior Playground</strong><br>
-      Adjust live sliders and watch the model's output change in real time.
-    </td>
-    <td style="border: none; padding-left: 30px; vertical-align: top; width: 50%;">
-      <a href="https://colab.research.google.com/github/pfekin/LARA/blob/main/hemingway/hemingway_style.ipynb">
-        <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
-      </a>
-      <br>
-      <strong>✍️ Hemingway Style Mimicry</strong><br>
-      Train a model to write in famous literary styles, then push it until it becomes a self-parody.
-    </td>
-  </tr>
-</table>
+<a href="https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+</a>
+<br>
+<strong>🎛️ Multi-Behavior Playground</strong><br>
+Adjust live sliders and watch the model's output change in real time.
 
 ---
 
