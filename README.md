@@ -16,7 +16,7 @@
 <!-- Interactive Demos - borderless table -->
 <br>
 
-**🎮 Try LARA in your browser. No setup, no account, no Hugging Face token required.**
+**🎮 Try LARA in your browser. Runs on a T4 GPU (free Colab tier). Training a behavior requires an L4. No setup, no account, no Hugging Face token required.**
 
 <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; width: 100%;">
   <tr>
