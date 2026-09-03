@@ -2,7 +2,7 @@
 
 **Lightweight Additive Residual Adaptation**: post-training for frozen language models, with small adaptations that can be combined as a **Mixture of Behaviors (MoBs)**.
 
-<!-- Standard Metadata Badges (compact, neutral) -->
+<!-- Standard Metadata Badges -->
 <div align="left">
 
 [![arXiv](https://img.shields.io/badge/arXiv-2607.28669-v1.svg)](https://doi.org/10.48550/arXiv.2607.28669)
@@ -13,14 +13,31 @@
 
 </div>
 
-<!-- Interactive Demos - visually separated from the badges -->
+<!-- Interactive Demos - borderless table -->
 <br>
 
 **🎮 Try LARA in your browser – no setup, no account required.**
 
-| | |
-| :--- | :--- |
-| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb) **Multi-Behavior Playground** – Adjust live sliders and watch the model's output change in real time. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/hemingway/hemingway_style.ipynb) **Hemingway Style Mimicry** – Train a model to write in famous literary styles, then push it until it becomes a self-parody. |
+<table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; width: 100%;">
+  <tr>
+    <td style="border: none; padding-right: 30px; vertical-align: top; width: 50%;">
+      <a href="https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb">
+        <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+      </a>
+      <br>
+      <strong>🎛️ Multi-Behavior Playground</strong><br>
+      Adjust live sliders and watch the model's output change in real time.
+    </td>
+    <td style="border: none; padding-left: 30px; vertical-align: top; width: 50%;">
+      <a href="https://colab.research.google.com/github/pfekin/LARA/blob/main/hemingway/hemingway_style.ipynb">
+        <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+      </a>
+      <br>
+      <strong>✍️ Hemingway Style Mimicry</strong><br>
+      Train a model to write in famous literary styles, then push it until it becomes a self-parody.
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -84,7 +101,7 @@ This turns post-training into a modular layer around a foundation model.
 
 ## Why LARA?
 
-LoRA showed that useful adaptation does not require updating every parameter. LARA places the correction in the residual stream rather than in the weight matrices — making behaviors **independent, composable, and runtime-selectable**.
+LoRA showed that useful adaptation does not require updating every parameter. LARA places the correction in the residual stream rather than in the weight matrices, making behaviors **independent, composable, and runtime-selectable**.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="media/figure1_lara_vs_lora_dark.svg">
@@ -334,33 +351,6 @@ Runs without downloading a model.
 ## Notebooks
 
 Both notebooks run in Google Colab with no setup. They load pre-trained behaviors from the Hugging Face Hub — no account or token required.
-
----
-
-### 🎛️ Multi-Behavior Playground
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb)  
-**[mobs/mobs_playground.ipynb](mobs/mobs_playground.ipynb)**
-
-Loads a collection of behaviors onto a single frozen base with a slider per behavior. Adjust a slider and the output changes in real time.
-
-**Demos**:
-1. Code behavior compresses a documented function into two lines.
-2. Bank correctly solves an arithmetic problem the base model fails.
-3. Summary behavior reduces 352 tokens to 17.
-
-Includes an optional training section (disabled by default).
-
----
-
-### ✍️ Style Mimicry
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/hemingway/hemingway_style.ipynb)  
-**[hemingway/hemingway_style.ipynb](hemingway/hemingway_style.ipynb)**
-
-Trains writing styles from public‑domain texts, producing two behaviors per author with different objectives, and compares them on one prompt.
-
-Explores what happens past the training strength: the style emerges, then becomes a self-parody. The breakdown order is deterministic.
 
 ---
 
