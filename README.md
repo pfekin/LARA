@@ -367,12 +367,6 @@ python tests/test_lara.py
 
 Covers layer resolution, the no-op at initialization, freezing, save and load, routing, `top_k`, pinning, and incremental addition. No model download, so it runs anywhere.
 
-## Results
-
-For supervised fine-tuning, LARA matches LoRA at equal parameter counts. For DPO and GRPO a single adapter in the middle of the network is enough, which is a much smaller artifact than a comparable LoRA. Behaviors carry across base models and across quantization, down to binary weights. LARA reads and writes activations, so it does not depend on how the base stores its parameters.
-
-Measurements, the gamma sweeps and the routing tables are in [research.md](research.md), alongside the [benchmark code](https://github.com/pfekin/LARA/tree/main/research) that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669) and the instructions to rerun it.
-
 ## Notebooks
 
 Two notebooks run on Colab without setup. Both load trained behaviors from the
@@ -393,6 +387,13 @@ writing styles from public-domain texts, two behaviors per author with different
 objectives, and compares them on one prompt. It also shows what happens past the
 strength a behavior was trained at: the style arrives, then turns into a parody
 of itself, and which author breaks first is not random.
+
+
+## Results
+
+For supervised fine-tuning, LARA matches LoRA at equal parameter counts. For DPO and GRPO a single adapter in the middle of the network is enough, which is a much smaller artifact than a comparable LoRA. Behaviors carry across base models and across quantization, down to binary weights. LARA reads and writes activations, so it does not depend on how the base stores its parameters.
+
+Measurements, the gamma sweeps and the routing tables are in [research.md](research.md), alongside the [benchmark code](https://github.com/pfekin/LARA/tree/main/research) that produced the numbers in the [preprint](https://doi.org/10.48550/arXiv.2607.28669) and the instructions to rerun it.
 
 ## Citation
 
