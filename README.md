@@ -367,26 +367,22 @@ python tests/test_lara.py
 
 Covers layer resolution, the no-op at initialization, freezing, save and load, routing, `top_k`, pinning, and incremental addition. No model download, so it runs anywhere.
 
+
 ## Notebooks
 
-Two notebooks run on Colab without setup. Both load trained behaviors from the
-Hub, so neither needs a Hugging Face account or a token.
+Both notebooks run directly in Google Colab with no setup required. They load pre-trained behaviors from the Hugging Face Hub, so you do not need an account or a token.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb)
-**[mobs/mobs_playground.ipynb](mobs/mobs_playground.ipynb)** puts a bank of
-behaviors on one frozen base and gives you a fader per behavior. Move one and the
-answer changes while the model runs. Three short examples show what a behavior
-changes that a prompt cannot: a code behavior turning a documented function into
-a two-line one, a bank getting an arithmetic question right that the base gets
-wrong, and a summary behavior cutting a 352-token answer to seventeen. Training
-your own is at the end, switched off by default.
+**[mobs/mobs_playground.ipynb](mobs/mobs_playground.ipynb)**
+This notebook loads a collection of behaviors onto a single frozen base model and provides a slider per behavior. Adjusting a slider changes the model's output in real time. Three examples demonstrate effects that prompt engineering alone cannot achieve:
+1. A code behavior compresses a documented function into just two lines.
+2. An ensemble (bank) correctly solves an arithmetic problem that the base model fails.
+3. A summary behavior reduces a 352‑token response down to 17 tokens.
+The notebook also includes an optional training section (disabled by default) for creating your own behaviors.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/hemingway/hemingway_style.ipynb)
-**[hemingway/hemingway_style.ipynb](hemingway/hemingway_style.ipynb)** trains
-writing styles from public-domain texts, two behaviors per author with different
-objectives, and compares them on one prompt. It also shows what happens past the
-strength a behavior was trained at: the style arrives, then turns into a parody
-of itself, and which author breaks first is not random.
+**[hemingway/hemingway_style.ipynb](hemingway/hemingway_style.ipynb)**
+This notebook trains writing styles from public‑domain texts, producing two distinct behaviors per author (each optimized for a different objective), and compares their outputs on a single prompt. It also explores what happens when you extrapolate beyond the original training strength: the style first emerges, then increasingly turns into a parody of itself. The order in which different authors' styles break down is deterministic, not random.
  
 
 ## Results
