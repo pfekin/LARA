@@ -15,8 +15,6 @@
 
 ---
 
-<!-- Interactive Demos - borderless table -->
-<br>
 
 **Try the interactive demo on a free T4 GPU. No setup, no account, no Hugging Face token required to run the pre-trained behavior.**
 (Training a new behavior requires a paid L4 runtime and a Hugging Face account to save your trained behavior.)
