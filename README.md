@@ -18,14 +18,14 @@
 <!-- Interactive Demos - borderless table -->
 <br>
 
-**🎮 Try the interactive demo on a free T4 GPU. No setup, no account, no Hugging Face token required to run the pre-trained behavior.**
+**Try the interactive demo on a free T4 GPU. No setup, no account, no Hugging Face token required to run the pre-trained behavior.**
 (Training a new behavior requires a paid L4 runtime and a Hugging Face account to save your trained behavior.)
 
 <a href="https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
 </a>
 <br>
-<strong>🎛️ Multi-Behavior Playground</strong><br>
+<strong>Multi-Behavior Playground</strong><br>
 Adjust live sliders and watch the model's output change in real time.
 
 ---
