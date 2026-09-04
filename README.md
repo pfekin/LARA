@@ -60,7 +60,7 @@ Adjust live sliders and watch the model's output change in real time.
 - [Citation](#citation)
 - [License](#license)
 
----
+
 
 ## What is LARA?
 
@@ -88,7 +88,7 @@ The larger system built around LARA is **Mixture of Behaviors (MoBs)**. A MoB is
 This turns post-training into a modular layer around a foundation model.
 </details>
 
----
+
 
 ## Why LARA?
 
@@ -109,7 +109,7 @@ LoRA showed that useful adaptation does not require updating every parameter. LA
 
 *Note: Qwen3-1.7B has 28 total layers. LARA inserts adapters at a subset of them (e.g., 6 evenly spaced for SFT, or a single middle layer for DPO/GRPO).*
 
----
+
 
 ## How it works
 
@@ -127,7 +127,7 @@ The base model is loaded once and stays frozen. Each behavior is a separate file
 Because no weights are modified, behaviors compose. A small router reads the frozen hidden state and produces a per-token distribution over the behaviors in the bank, and their corrections are blended by weight. There is no limit to how many you install.
 </details>
 
----
+
 
 ## Install
 
@@ -149,7 +149,7 @@ Python 3.9+, torch 2.0+. Examples also need `transformers`, `datasets`, `acceler
 pip install -e ".[examples]"
 ```
 
----
+
 
 ## Train a behavior
 
@@ -170,7 +170,7 @@ lara.save("behaviors/code", route_samples=prompts[:200])
 
 `layers=6` spreads six adapters evenly over the depth. Pass a list for exact control. LARA works with HF `Trainer`, TRL's `DPOTrainer`, `GRPOTrainer`, or custom loops.
 
----
+
 
 ## Turn the adaptation up or down
 
@@ -182,7 +182,7 @@ lara.gamma = 1.0     # the trained behavior
 
 Useful range: ~0 to 1.5.
 
----
+
 
 ## Mixture of Behaviors (MoBs)
 
@@ -221,7 +221,7 @@ bank.save("mybank/")
 bank = Bank.load("mybank/", model, tokenizer)
 ```
 
----
+
 
 ## Routing
 
@@ -262,7 +262,7 @@ bank.route_weights(input_ids)
 # {'code': 0.71, 'math': 0.04, 'polite': 0.25}
 ```
 
----
+
 
 ## Small model, specialized behavior
 
@@ -275,7 +275,7 @@ bank.route_weights(input_ids)
 
 A lightweight learned behavior corrects a domain-specific distinction without changing the base model. Measurements across five behaviors and four base models are in [research.md](research.md).
 
----
+
 
 ## What a behavior looks like on disk
 
@@ -286,7 +286,7 @@ behaviors/code/
   route_samples.jsonl     # short texts for routing
 ```
 
----
+
 
 ## API
 
@@ -315,7 +315,7 @@ behaviors/code/
 | `bank.route_weights(input_ids)` | Mean routing weight per behavior |
 | `bank.save(path)`, `Bank.load(path, model, tokenizer)` | Save/load the bank |
 
----
+
 
 ## Examples
 
@@ -327,7 +327,7 @@ Runnable end to end on one GPU:
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/pfekin/LARA/blob/main/examples/quickstart.ipynb)
 
----
+
 
 ## Tests
 
@@ -343,7 +343,7 @@ For SFT, LARA matches LoRA at equal parameter counts. For DPO and GRPO, a single
 
 Full benchmarks, gamma sweeps, and routing tables are in [research.md](research.md), alongside the [benchmark code](https://github.com/pfekin/LARA/tree/main/research) and instructions to rerun it.
 
----
+
 
 ## Deep dive
 
@@ -398,7 +398,7 @@ This does not replace RAG. RAG provides information the model does not have. A b
 The small size of the artifacts is what makes this practical at the edge. A device can carry one base model and a bank of specialized behaviors, and a new specialization is distributed as a small adapter rather than another copy of the base. That matters where storage, memory and network access are constrained, and it allows personal adaptations to stay on the device rather than being sent to a server.
 </details>
 
----
+
 
 ## Citation
 
@@ -420,7 +420,7 @@ The small size of the artifacts is what makes this practical at the edge. A devi
 }
 ```
 
----
+
 
 ## License
 
