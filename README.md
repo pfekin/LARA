@@ -74,6 +74,8 @@ strength          = runtime scaling
 combination       = composition
 ```
 
+Because the base weights remain frozen, LARA is naturally suited to continuous learning. New behaviors can be added over time without interfering with existing ones, effectively eliminating catastrophic forgetting. The same residual stream mechanism also provides a straightforward path for multimodal adaptation: learned corrections can steer a frozen text model to align with visual or audio token representations without retraining the core model.
+
 <details>
 <summary><strong>📖 The bigger picture</strong></summary>
 
