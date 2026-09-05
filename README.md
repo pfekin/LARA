@@ -1,6 +1,6 @@
 
 <!-- Standard Metadata Badges -->
-<div align="center">
+<div align="left">
 
 # LARA
 
@@ -17,6 +17,15 @@
 
 ---
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_hero_dark.png">
+  <img alt="LARA reads the hidden state between layers, computes a low-rank correction, and adds it back to the residual stream" src="media/LARA_readme_hero.png">
+</picture>
+
+[Paper](https://doi.org/10.48550/arXiv.2607.28669) · [Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5)
+
+---
+
 
 **Try the interactive demo on a free T4 GPU. No setup, no account, no Hugging Face token required to run the pre-trained behavior.**
 (Training a new behavior requires a paid L4 runtime and a Hugging Face account to save your trained behavior.)
@@ -27,15 +36,6 @@
 <br>
 <strong>Multi-Behavior Playground</strong><br>
 Adjust live sliders and watch the model's output change in real time.
-
----
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="media/LARA_readme_hero_dark.png">
-  <img alt="LARA reads the hidden state between layers, computes a low-rank correction, and adds it back to the residual stream" src="media/LARA_readme_hero.png">
-</picture>
-
-[Paper](https://doi.org/10.48550/arXiv.2607.28669) · [Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5)
 
 ---
 
