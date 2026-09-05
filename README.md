@@ -169,7 +169,7 @@ lara.gamma = 0.5     # halfway
 lara.gamma = 1.0     # the trained behavior
 ```
 
-Useful range: ~0 to 1.5.
+Useful range: ~0 to 2.0.
 
 
 
