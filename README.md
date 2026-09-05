@@ -330,7 +330,7 @@ Runs without downloading a model.
 
 For SFT, LARA matches LoRA at equal parameter counts. For DPO and GRPO, a single adapter in the middle of the network is enough. A much smaller artifact than a comparable LoRA. Behaviors transfer across base models and across quantization, down to binary weights.
 
-Full benchmarks, gamma sweeps, and routing tables are in [research.md](research.md), alongside the [benchmark code](https://github.com/pfekin/LARA/tree/main/research) and instructions to rerun it.
+Full benchmarks, gamma sweeps, and routing tables are in [research.md](research.md), alongside the [benchmark code](https://github.com/pfekin/LARA/tree/main/benchmark) and instructions to rerun it.
 
 
 
