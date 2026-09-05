@@ -22,22 +22,11 @@
   <img alt="LARA reads the hidden state between layers, computes a low-rank correction, and adds it back to the residual stream" src="media/LARA_readme_hero.png">
 </picture>
 
-[Paper](https://doi.org/10.48550/arXiv.2607.28669) · [Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5)
+[Paper](https://doi.org/10.48550/arXiv.2607.28669) · [Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5) · [Demo](https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb)
 
 ---
 
 
-**Try the interactive demo on a free T4 GPU. No setup, no account, no Hugging Face token required to run the pre-trained behavior.**
-(Training a new behavior requires a paid L4 runtime and a Hugging Face account to save your trained behavior.)
-
-<a href="https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
-</a>
-<br>
-<strong>Multi-Behavior Playground</strong><br>
-Adjust live sliders and watch the model's output change in real time.
-
----
 
 ## Contents
 
