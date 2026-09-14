@@ -22,7 +22,7 @@
   <img alt="LARA reads the hidden state between layers, computes a low-rank correction, and adds it back to the residual stream" src="media/LARA_readme_hero.png">
 </picture>
 
-[Paper](https://doi.org/10.48550/arXiv.2607.28669) · [Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5) · [Demo](https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb)
+[Paper](https://doi.org/10.48550/arXiv.2607.28669) · [Slides](media/LARA_slides.pdf) · [Video walkthrough](https://github.com/user-attachments/assets/9591acc0-d7f4-4c71-895a-26798a0b03e5) · [Demo](https://colab.research.google.com/github/pfekin/LARA/blob/main/mobs/mobs_playground.ipynb) · [Writing Style Demo](https://colab.research.google.com/github/pfekin/LARA/blob/main/hemingway/hemingway_style.ipynb)
 
 ---
 
